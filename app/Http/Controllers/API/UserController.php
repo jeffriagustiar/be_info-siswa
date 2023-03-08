@@ -95,8 +95,10 @@ class UserController extends Controller
 
     public function logout(Request $request)
     {
-        $token = $request->user()->currentAccessToken()->delete();
+        $token = User::where('nis', $request->nis)->first();
+        $token->api_token ='';
+        $token->save();
 
-        return response()->json([$token,'Token Revoked']);
+        return response()->json([$token ,'Token Revoked']);
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Siswa extends Model
 {
     use HasFactory;
+    protected $connection = 'mysql';
     protected $table = 'siswa';
     protected $primaryKey = 'nis';
      

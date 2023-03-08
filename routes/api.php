@@ -18,7 +18,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->group(function(){
     Route::post('logout', [UserController::class, 'logout']);
-    Route::post('dataUser', [UserController::class, 'fetch']);
+    Route::post('update', [UserController::class, 'updateProfile']);
+    Route::get('dataUser', [UserController::class, 'fetch']);
+    
+    Route::get('dataSpp', [SiswaController::class, 'sppSiswa']);
     Route::get('dataSiswa', [SiswaController::class, 'all']);
 });
 
