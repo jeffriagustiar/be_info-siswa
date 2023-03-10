@@ -23,6 +23,7 @@ Route::middleware('auth:api')->group(function(){
     
     Route::get('dataSpp', [SiswaController::class, 'sppSiswa']);
     Route::get('dataSiswa', [SiswaController::class, 'all']);
+    Route::get('sppDetail', [SiswaController::class, 'sppDetail']);
 });
 
 Route::post('login', [UserController::class, 'login']);

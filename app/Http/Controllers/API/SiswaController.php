@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\PenerimaanSpp;
 use Illuminate\Support\Facades\Auth;
+use PhpParser\Node\Expr\Cast\Double;
 
 class SiswaController extends Controller
 {
@@ -33,11 +34,22 @@ class SiswaController extends Controller
 
     public function sppSiswa(Request $request)
     {
-        $spp = Spp::where('nis','21220002')->first();
-        $a = $spp->besar;
-        $b = PenerimaanSpp::where('idbesarjtt',$spp->replid)->sum('jumlah');
-        $c = $a - $b;
-        $d = number_format(($b/$a), 2,);
+        $nis = Auth::user()->nis;
+        $spp = Spp::where('nis',$nis)->first();
+        if ($spp) {
+            $a = $spp->besar;
+            $b = PenerimaanSpp::where('idbesarjtt',$spp->replid)->sum('jumlah');
+            $c = $a - $b;
+            $d = number_format(($b/$a), 2,);
+            $e = ($b/$a)*100;
+        } else {
+            $a = '0';
+            $b = '0';
+            $c = 0;
+            $d = '0.0';
+            $e = '0';
+        }
+        
 
         return response()->json([
             'code' => 200,
@@ -47,8 +59,25 @@ class SiswaController extends Controller
                 "dibayar" => $b,
                 "sisa" => $c,
                 "persen" => $d,
+                "persen2" => $e,
             ],
-            'test' => Auth::user()->nis
+            'test' => $nis
+        ]);
+    }
+
+    public function sppDetail(Request $request)
+    {
+        $nis = Auth::user()->nis;
+        $spp = Spp::where('nis',$nis)->first();
+        if ($spp) {
+            $data = PenerimaanSpp::where('idbesarjtt',$spp->replid)->get();
+        } else {
+            $data = [];
+        }
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $data,
         ]);
     }
 }
