@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Kelas;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Siswa extends Model
 {
@@ -35,6 +36,7 @@ class Siswa extends Model
         'alamatsiswa',
         'telponsiswa',
         'emailsiswa',
+        'hpsiswa',
         'asalsekolah',
         'noijasah',
         'tglijasah',
@@ -78,7 +80,6 @@ class Siswa extends Model
         'bahasa',
         'jarak',
         'kodepossiswa',
-        'hpsiswa',
         'kesehatan',
         'ketsekolah',
         'almayah',
@@ -97,4 +98,8 @@ class Siswa extends Model
         'token',
         'issync',
     ];
+
+    public function kelas(){
+        return $this->belongsTo(Kelas::class, 'idkelas','replid');
+    }
 }

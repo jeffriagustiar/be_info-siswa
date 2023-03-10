@@ -19,13 +19,13 @@ class SiswaController extends Controller
             return response()->json([
                 'code' => 200,
                 'status' => 'success',
-                'data' => Siswa::find($nis)
+                'data' => Siswa::with(['kelas'])->find($nis)
             ]);
         }else{
             return response()->json([
                 'code' => 200,
                 'status' => 'success',
-                'data' => Siswa::limit(50)->get()
+                'data' => Siswa::with(['kelas'])->limit(50)->get()
             ]);
         }
 

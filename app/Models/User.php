@@ -107,4 +107,8 @@ class User extends Authenticatable
         'token',
         'issync',
     ];
+
+    public function kelas(){
+        return $this->belongsTo(Kelas::class, 'idkelas','replid');
+    }
 }

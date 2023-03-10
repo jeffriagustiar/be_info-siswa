@@ -51,7 +51,7 @@ class UserController extends Controller
                 'pinsiswa' => 'required'
             ]);
 
-            $user = User::where('nis', $request->nis)->first();
+            $user = User::with(['kelas'])->where('nis', $request->nis)->first();
             if ( $request->pinsiswa != $user->pinsiswa) {
                 throw new \Exception('Invalid Credentials');
             }
