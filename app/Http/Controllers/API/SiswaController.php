@@ -6,6 +6,10 @@ use App\Models\Spp;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\AturannhbModel;
+use App\Models\KomenRaporModel;
+use App\Models\NapModel;
+use App\Models\PelajaranModel;
 use App\Models\PenerimaanSpp;
 use Illuminate\Support\Facades\Auth;
 use PhpParser\Node\Expr\Cast\Double;
@@ -74,6 +78,34 @@ class SiswaController extends Controller
         } else {
             $data = [];
         }
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $data,
+        ]);
+    }
+
+    public function nilaiRapor(Request $request)
+    {
+        $data = NapModel::join('siswa', 'nap.nis','=','siswa.nis')
+                        ->join('komenrapor', 'nap.idinfo', '=', 'komenrapor.replid')
+                        ->join('aturannhb', 'nap.idaturan', '=', 'aturannhb.replid')
+                        ->join('pelajaran', 'nap.idpelajaran', '=', 'pelajaran.replid')
+                        ->select(
+                            'siswa.nama',
+                            'nap.idpelajaran',
+                            'pelajaran.nama',
+                            'nap.nilaiangka',
+                            'nap.nilaihuruf',
+                            'komenrapor.idsemester',
+                            'aturannhb.dasarpenilaian',
+                            'nap.komentar',
+                            'komenrapor.komentar as komentar2',
+                        )
+                        ->where('nap.nis','=',Auth::user()->nis)
+                        ->where('komenrapor.idsemester','=',$request->input('id'))
+                        ->get();
+
         return response()->json([
             'code' => 200,
             'status' => 'success',
