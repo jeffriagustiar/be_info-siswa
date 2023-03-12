@@ -11,6 +11,7 @@ use App\Models\KomenRaporModel;
 use App\Models\NapModel;
 use App\Models\PelajaranModel;
 use App\Models\PenerimaanSpp;
+use App\Models\PhsiswaModel;
 use Illuminate\Support\Facades\Auth;
 use PhpParser\Node\Expr\Cast\Double;
 
@@ -110,6 +111,23 @@ class SiswaController extends Controller
             'code' => 200,
             'status' => 'success',
             'data' => $data,
+        ]);
+    }
+
+    public function pHarianSiswa(Request $request)
+    {
+        $year = $request->input('year');
+        $month = $request->input('month');
+        $data = PhsiswaModel::where('nis','=',Auth::user()->nis)
+                            ->whereYear('ts','=',$year);
+        if ($month) {
+            $data->WhereMonth('ts','=',$month);
+        }
+                            
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $data->get(),
         ]);
     }
 }

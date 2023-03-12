@@ -25,6 +25,7 @@ Route::middleware('auth:api')->group(function(){
     Route::get('dataSiswa', [SiswaController::class, 'all']);
     Route::get('sppDetail', [SiswaController::class, 'sppDetail']);
     Route::get('nilaiRapor', [SiswaController::class, 'nilaiRapor']);
+    Route::get('absenHarianSiswa', [SiswaController::class, 'pHarianSiswa']);
 });
 
 Route::post('login', [UserController::class, 'login']);
