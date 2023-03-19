@@ -4,14 +4,17 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Spp;
 use App\Models\Siswa;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Models\AturannhbModel;
-use App\Models\KomenRaporModel;
 use App\Models\NapModel;
-use App\Models\PelajaranModel;
-use App\Models\PenerimaanSpp;
 use App\Models\PhsiswaModel;
+use Illuminate\Http\Request;
+use App\Models\PenerimaanSpp;
+use App\Models\AturannhbModel;
+use App\Models\PelajaranModel;
+use App\Models\KomenRaporModel;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Models\SemesterModel;
+use App\Models\TahunModel;
 use Illuminate\Support\Facades\Auth;
 use PhpParser\Node\Expr\Cast\Double;
 
@@ -105,6 +108,7 @@ class SiswaController extends Controller
                         )
                         ->where('nap.nis','=',Auth::user()->nis)
                         ->where('komenrapor.idsemester','=',$request->input('id'))
+                        ->orderBy("pelajaran.nama", "asc")
                         ->get();
 
         return response()->json([
@@ -112,6 +116,59 @@ class SiswaController extends Controller
             'status' => 'success',
             'data' => $data,
         ]);
+    }
+
+    public function nilaiRaporD(Request $request)
+    {
+        $nis = Auth::user()->nis;
+        $sem = $request->input('sem');
+        $jenis = $request->input('jenis'); //KMK
+        $tipe = $request->input('tipe'); //ASSOF
+        $tahun = $request->input('tahun'); //2022/2023
+        $data = DB::select("
+            SELECT 
+            a.idpelajaran,b.nama,a.nilaiangka,a.nilaihuruf,c.idsemester,e.dasarpenilaian,a.komentar,c.komentar as komentar2,
+            f.kode,f.kelompok,h.tahunajaran
+            FROM nap a 
+            inner join pelajaran b on a.idpelajaran=b.replid 
+            inner join komenrapor c on a.idinfo=c.replid 
+            inner join siswa d on a.nis=d.nis 
+            inner join aturannhb e on a.idaturan=e.replid 
+            inner join kelompokpelajaran f on b.idkelompok=f.replid
+            inner join kelas g on d.idkelas=g.replid
+            inner join tahunajaran h on g.idtahunajaran=h.replid
+
+            where d.nis='$nis' 
+            and c.idsemester='$sem' 
+            and f.kode='$jenis' 
+            and e.dasarpenilaian like '%$tipe%' 
+            and h.tahunajaran='$tahun'
+        ");
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $data,
+        ]);
+    }
+
+    public function semester()
+    {
+        $data = SemesterModel::all();
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $data,
+        ]);   
+    }
+
+    public function tahun()
+    {
+        $data = TahunModel::all();
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $data,
+        ]);   
     }
 
     public function pHarianSiswa(Request $request)
@@ -128,6 +185,41 @@ class SiswaController extends Controller
             'code' => 200,
             'status' => 'success',
             'data' => $data->get(),
+        ]);
+    }
+
+    public function coba()
+    {
+        $nis='21220002';
+        $year=2023;
+        $results = DB::select('
+        SELECT 
+            b.idpelajaran,
+            c.nama,
+            YEAR(a.ts) AS tahun, 
+            MONTH(a.ts) AS bulan, 
+            COUNT(CASE WHEN a.statushadir = 0 THEN 1 ELSE NULL END) AS hadir,
+            COUNT(CASE WHEN a.statushadir = 1 THEN 1 ELSE NULL END) AS sakit,
+            COUNT(CASE WHEN a.statushadir = 2 THEN 1 ELSE NULL END) AS ijin,
+            COUNT(CASE WHEN a.statushadir = 3 THEN 1 ELSE NULL END) AS alpa,
+            COUNT(CASE WHEN a.statushadir = 4 THEN 1 ELSE NULL END) AS cuti
+        FROM 
+            ppsiswa a
+            inner join presensipelajaran b on a.idpp=b.replid
+            inner join pelajaran c on b.idpelajaran=c.replid
+        where 
+            a.nis='.$nis.' and year(a.ts)='.$year.'
+        GROUP BY 
+            YEAR(a.ts), 
+            MONTH(a.ts),
+            c.nama,
+            b.idpelajaran;
+        ');
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $results,
         ]);
     }
 }
