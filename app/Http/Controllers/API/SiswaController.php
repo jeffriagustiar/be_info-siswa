@@ -151,6 +151,44 @@ class SiswaController extends Controller
         ]);
     }
 
+    public function nilaiHarian(Request $request)
+    {
+        $mapel = $request->input('mapel');
+        $kelas = $request->input('kelas');
+        $nis = Auth::user()->nis;
+        $data = DB::select("
+            select 
+            b.tanggal,a.nilaiujian,a.keterangan,a.ts,c.keterangan as keterangan2,c.jenisujian,d.nama,b.kode
+            from nilaiujian a 
+            inner join ujian b on a.idujian=b.replid
+            inner join jenisujian c on b.idjenis=c.replid
+            inner join pelajaran d on b.idpelajaran=d.replid
+            where a.nis='$nis' and b.idpelajaran='$mapel' and b.idkelas='$kelas'
+            ORDER BY c.jenisujian ASC;
+        ");
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $data,
+        ]);
+    }
+
+    public function maple(Request $request)
+    {
+        $jenis = $request->input('jenis');
+        $data = DB::select("
+            select a.replid,a.nama 
+            from pelajaran a 
+            inner join kelompokpelajaran b on a.idkelompok=b.replid
+            where b.kode='$jenis'
+        ");
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $data,
+        ]);
+    }
+
     public function semester()
     {
         $data = SemesterModel::all();
@@ -163,7 +201,7 @@ class SiswaController extends Controller
 
     public function tahun()
     {
-        $data = TahunModel::all();
+        $data = TahunModel::orderBy("tahunajaran", "asc")->get();
         return response()->json([
             'code' => 200,
             'status' => 'success',
