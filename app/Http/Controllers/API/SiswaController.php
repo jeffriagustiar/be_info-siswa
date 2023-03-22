@@ -155,6 +155,7 @@ class SiswaController extends Controller
     {
         $mapel = $request->input('mapel');
         $kelas = $request->input('kelas');
+        $sem = $request->input('sem');
         $nis = Auth::user()->nis;
         $data = DB::select("
             select 
@@ -163,7 +164,7 @@ class SiswaController extends Controller
             inner join ujian b on a.idujian=b.replid
             inner join jenisujian c on b.idjenis=c.replid
             inner join pelajaran d on b.idpelajaran=d.replid
-            where a.nis='$nis' and b.idpelajaran='$mapel' and b.idkelas='$kelas'
+            where a.nis='$nis' and b.idpelajaran='$mapel' and b.idkelas='$kelas' and b.idsemester='$sem'
             ORDER BY c.jenisujian ASC;
         ");
         return response()->json([
