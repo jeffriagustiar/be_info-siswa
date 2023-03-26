@@ -127,17 +127,18 @@ class SiswaController extends Controller
         $tahun = $request->input('tahun'); //2022/2023
         $data2 = DB::select(" 
             SELECT 
-            d.nama,a.idaturan,b.nama,a.nilaiangka,a.nilaihuruf,a.idinfo,c.replid,c.idsemester,e.dasarpenilaian,c.komentar,c.jenis,f.kode,f.kelompok, g.nilaimin, i.tahunajaran
-            FROM nap a 
-            inner join pelajaran b on a.idpelajaran=b.replid 
-            inner join komenrapor c on a.idinfo=c.replid 
-            inner join siswa d on a.nis=d.nis 
-            inner join aturannhb e on a.idaturan=e.replid 
-            inner join kelompokpelajaran f on b.idkelompok=f.replid
+                d.nama,a.idaturan,b.nama,a.nilaiangka,a.nilaihuruf,a.idinfo,c.replid,c.idsemester,e.dasarpenilaian,c.komentar,c.jenis,f.kode,f.kelompok, g.nilaimin, i.tahunajaran
+            FROM 
+                nap a 
+                inner join pelajaran b on a.idpelajaran=b.replid 
+                inner join komenrapor c on a.idinfo=c.replid 
+                inner join siswa d on a.nis=d.nis 
+                inner join aturannhb e on a.idaturan=e.replid 
+                inner join kelompokpelajaran f on b.idkelompok=f.replid
             
-            inner join infonap g on a.idinfo=g.replid
-            inner join kelas h on g.idkelas=h.replid
-            inner join tahunajaran i on h.idtahunajaran=i.replid
+                inner join infonap g on a.idinfo=g.replid
+                inner join kelas h on g.idkelas=h.replid
+                inner join tahunajaran i on h.idtahunajaran=i.replid
             
             where 
                 d.nis='$nis'and 
@@ -148,22 +149,24 @@ class SiswaController extends Controller
         ");
         $data = DB::select("
             SELECT 
-            a.idpelajaran,b.nama,a.nilaiangka,a.nilaihuruf,c.idsemester,e.dasarpenilaian,a.komentar,c.komentar as komentar2,
-            f.kode,f.kelompok,h.tahunajaran
-            FROM nap a 
-            inner join pelajaran b on a.idpelajaran=b.replid 
-            inner join komenrapor c on a.idinfo=c.replid 
-            inner join siswa d on a.nis=d.nis 
-            inner join aturannhb e on a.idaturan=e.replid 
-            inner join kelompokpelajaran f on b.idkelompok=f.replid
-            inner join kelas g on d.idkelas=g.replid
-            inner join tahunajaran h on g.idtahunajaran=h.replid
+                a.idpelajaran,b.nama,a.nilaiangka,a.nilaihuruf,c.idsemester,e.dasarpenilaian,a.komentar,c.komentar as komentar2,
+                f.kode,f.kelompok,h.tahunajaran
+            FROM 
+                nap a 
+                inner join pelajaran b on a.idpelajaran=b.replid 
+                inner join komenrapor c on a.idinfo=c.replid 
+                inner join siswa d on a.nis=d.nis 
+                inner join aturannhb e on a.idaturan=e.replid 
+                inner join kelompokpelajaran f on b.idkelompok=f.replid
+                inner join kelas g on d.idkelas=g.replid
+                inner join tahunajaran h on g.idtahunajaran=h.replid
 
-            where d.nis='$nis' 
-            and c.idsemester='$sem' 
-            and f.kode='$jenis' 
-            and e.dasarpenilaian like '%$tipe%' 
-            and h.tahunajaran='$tahun'
+            where 
+                d.nis='$nis' 
+                and c.idsemester='$sem' 
+                and f.kode='$jenis' 
+                and e.dasarpenilaian like '%$tipe%' 
+                and h.tahunajaran='$tahun'
         ");
         return response()->json([
             'code' => 200,
@@ -182,16 +185,22 @@ class SiswaController extends Controller
         $data = DB::select("
             select 
                 b.tanggal,a.nilaiujian,a.keterangan,a.ts,c.keterangan as keterangan2,c.jenisujian,d.nama,b.kode,f.tahunajaran
-            from nilaiujian a 
-            inner join ujian b on a.idujian=b.replid
-            inner join jenisujian c on b.idjenis=c.replid
-            inner join pelajaran d on b.idpelajaran=d.replid
+            from 
+                nilaiujian a 
+                inner join ujian b on a.idujian=b.replid
+                inner join jenisujian c on b.idjenis=c.replid
+                inner join pelajaran d on b.idpelajaran=d.replid
             
-            inner join kelas e on b.idkelas=e.replid
-            inner join tahunajaran f on f.replid=e.idtahunajaran
+                inner join kelas e on b.idkelas=e.replid
+                inner join tahunajaran f on f.replid=e.idtahunajaran
             
-            where a.nis='$nis' and b.idpelajaran='$mapel' and f.tahunajaran='$tahun' and b.idsemester='$sem'
-            ORDER BY c.jenisujian ASC;
+            where 
+                a.nis='$nis' and 
+                b.idpelajaran='$mapel' and 
+                f.tahunajaran='$tahun' and 
+                b.idsemester='$sem'
+            ORDER BY 
+                c.jenisujian ASC;
             
         ");
         return response()->json([
@@ -205,10 +214,13 @@ class SiswaController extends Controller
     {
         $jenis = $request->input('jenis');
         $data = DB::select("
-            select a.replid,a.nama 
-            from pelajaran a 
-            inner join kelompokpelajaran b on a.idkelompok=b.replid
-            where b.kode='$jenis'
+            select 
+                a.replid,a.nama 
+            from 
+                pelajaran a 
+                inner join kelompokpelajaran b on a.idkelompok=b.replid
+            where 
+                b.kode='$jenis'
         ");
         return response()->json([
             'code' => 200,
@@ -232,13 +244,17 @@ class SiswaController extends Controller
         $nis = Auth::user()->nis;
         // $data = TahunModel::orderBy("tahunajaran", "asc")->get();
         $data = DB::select("
-            select d.replid,d.tahunajaran,d.departemen
-            from nap a
-            inner join infonap b on a.idinfo=b.replid
-            inner join kelas c on b.idkelas=c.replid
-            inner join tahunajaran d on c.idtahunajaran=d.replid  
-            where a.nis='$nis'
-            GROUP by d.tahunajaran,d.replid,d.departemen
+            select 
+                d.replid,d.tahunajaran,d.departemen
+            from 
+                nap a
+                inner join infonap b on a.idinfo=b.replid
+                inner join kelas c on b.idkelas=c.replid
+                inner join tahunajaran d on c.idtahunajaran=d.replid  
+            where 
+                a.nis='$nis'
+            GROUP by 
+                d.tahunajaran,d.replid,d.departemen
             ");
         return response()->json([
             'code' => 200,
@@ -296,6 +312,40 @@ class SiswaController extends Controller
             'code' => 200,
             'status' => 'success',
             'data' => $results,
+        ]);
+    }
+
+    public function tahunAbsen()
+    {
+        $currentYear = date('Y');
+    
+        // Calculate the year 5 years ago
+        $fiveYearsAgo = $currentYear - 3;
+
+        // Generate an array containing the years between $fiveYearsAgo and $currentYear
+        $years = range($fiveYearsAgo, $currentYear);
+
+        // Create an empty array to store the result
+        $result = [];
+        $i=1;
+
+        // Loop through each year and add it to the result array
+        foreach ($years as $year) {
+            // Generate some dummy data for the year
+            $data = [
+                'replid' => $i++,
+                'tahunajaran' => $year,
+                'departemen' => ''
+            ];
+
+            // Add the data to the result array
+            $result[] = $data;
+        }
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $result,
         ]);
     }
 }
