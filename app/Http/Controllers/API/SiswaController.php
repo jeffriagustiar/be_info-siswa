@@ -175,6 +175,62 @@ class SiswaController extends Controller
         ]);
     }
 
+    public function nilaiRaporPancasila(Request $request)
+    {
+        $nis = Auth::user()->nis;
+        $sem = $request->input('sem');
+        $jenis = 'P5';
+        $tipe = 'D';
+        $tahun = $request->input('tahun'); //2022/2023
+        $mapel = $request->input('mapel'); //136
+        $data2 = DB::select(" 
+            SELECT 
+                d.nama,a.idaturan,b.nama,a.nilaiangka,
+                CASE a.nilaihuruf
+                    WHEN 'SB' THEN 'Sangat Berkembang'
+                    WHEN 'BSH' THEN 'Berkembang Sesuai Harapan'
+                    WHEN 'MB' THEN 'Mulai Berkembang'
+                    WHEN 'BB' THEN 'Belum Berkembang'
+                    ELSE a.nilaihuruf
+                END as nilaihuruf,
+                a.idinfo,c.replid,c.idsemester,
+                CASE e.dasarpenilaian 
+                    WHEN 'D1' THEN 'D1 : Beriaman, bertaqwa kepada Tuhan YME dan berakhlak mulia'
+                    WHEN 'D2' THEN 'D2 : Bernalar kritis'
+                    WHEN 'D3' THEN 'D3 : Mandiri'
+                    WHEN 'D4' THEN 'D4 : Kebhinekaan Global'
+                    WHEN 'D5' THEN 'D5 : Kreatif'
+                    WHEN 'D6' THEN 'D6 : Bergotongroyong'
+                    ELSE e.dasarpenilaian
+                END AS dasarpenilaian,
+                c.komentar,c.jenis,f.kode,f.kelompok, g.nilaimin, i.tahunajaran
+            FROM 
+                nap a 
+                inner join pelajaran b on a.idpelajaran=b.replid 
+                inner join komenrapor c on a.idinfo=c.replid 
+                inner join siswa d on a.nis=d.nis 
+                inner join aturannhb e on a.idaturan=e.replid 
+                inner join kelompokpelajaran f on b.idkelompok=f.replid
+            
+                inner join infonap g on a.idinfo=g.replid
+                inner join kelas h on g.idkelas=h.replid
+                inner join tahunajaran i on h.idtahunajaran=i.replid
+            
+            where 
+                d.nis='$nis'and 
+                g.idsemester='$sem' and 
+                f.kode='$jenis' and 
+                e.dasarpenilaian like '%$tipe%' and 
+                i.tahunajaran='$tahun' and 
+                a.idpelajaran='$mapel'
+        ");
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $data2,
+        ]);
+    }
+
     public function nilaiHarian(Request $request)
     {
         $mapel = $request->input('mapel');
