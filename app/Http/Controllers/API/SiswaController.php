@@ -233,10 +233,10 @@ class SiswaController extends Controller
 
     public function nilaiHarian(Request $request)
     {
-        $mapel = $request->input('mapel');
-        // $kelas = $request->input('kelas');
-        $sem = $request->input('sem');
-        $tahun = $request->input('tahun'); //2022/2023
+        // $mapel = $request->input('mapel');
+        $jenis = $request->input('jenis'); //2942
+        // $sem = $request->input('sem');
+        // $tahun = $request->input('tahun'); //2022/2023
         $nis = Auth::user()->nis;
         $data = DB::select("
             select 
@@ -251,12 +251,52 @@ class SiswaController extends Controller
                 inner join tahunajaran f on f.replid=e.idtahunajaran
             
             where 
-                a.nis='$nis' and 
-                b.idpelajaran='$mapel' and 
-                f.tahunajaran='$tahun' and 
-                b.idsemester='$sem'
+                a.nis='$nis' 
+                and c.replid='$jenis'
             ORDER BY 
                 c.jenisujian ASC;
+            
+        ");
+        //kondisi lebih detail tambahkan where di bawah
+        // and b.idpelajaran='$mapel'
+        // and f.tahunajaran='$tahun' 
+        // and b.idsemester='$sem'
+        
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $data,
+        ]);
+    }
+
+    public function nilaiHarianJenis(Request $request)
+    {
+        $mapel = $request->input('mapel'); //121
+        // $kelas = $request->input('kelas');
+        $sem = $request->input('sem');
+        $tahun = $request->input('tahun'); //2022/2023
+        $nis = Auth::user()->nis; //21220025
+        $data = DB::select("
+            select 
+                c.replid,c.jenisujian
+            from 
+                nilaiujian a 
+            inner join ujian b on a.idujian=b.replid
+            inner join jenisujian c on b.idjenis=c.replid
+            inner join pelajaran d on b.idpelajaran=d.replid
+        
+            inner join kelas e on b.idkelas=e.replid
+            inner join tahunajaran f on f.replid=e.idtahunajaran
+        
+            where 
+                a.nis='$nis' 
+                and b.idpelajaran='$mapel' 
+                and f.tahunajaran='$tahun' 
+                and b.idsemester='$sem'
+            GROUP by 
+                c.replid, 
+                c.jenisujian
+            ORDER BY c.jenisujian ASC;
             
         ");
         return response()->json([

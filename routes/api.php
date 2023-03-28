@@ -29,6 +29,7 @@ Route::middleware('auth:api')->group(function(){
     Route::get('nilaiRaporD', [SiswaController::class, 'nilaiRaporD']);
     Route::get('nilaiRaporPancasila', [SiswaController::class, 'nilaiRaporPancasila']);
     Route::get('nilaiHarian', [SiswaController::class, 'nilaiHarian']);
+    Route::get('nilaiHarianJenis', [SiswaController::class, 'nilaiHarianJenis']);
     Route::get('tahun', [SiswaController::class, 'tahun']);
 });
 Route::get('semester', [SiswaController::class, 'semester']);
