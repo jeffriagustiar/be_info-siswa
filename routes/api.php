@@ -26,14 +26,15 @@ Route::middleware('auth:api')->group(function(){
     Route::get('sppDetail', [SiswaController::class, 'sppDetail']);
     Route::get('nilaiRapor', [SiswaController::class, 'nilaiRapor']);
     Route::get('absenHarianSiswa', [SiswaController::class, 'pHarianSiswa']);
+    Route::get('absenHarianSiswaHitung', [SiswaController::class, 'pHarianSiswaHitung']);
     Route::get('nilaiRaporD', [SiswaController::class, 'nilaiRaporD']);
     Route::get('nilaiRaporPancasila', [SiswaController::class, 'nilaiRaporPancasila']);
     Route::get('nilaiHarian', [SiswaController::class, 'nilaiHarian']);
     Route::get('nilaiHarianJenis', [SiswaController::class, 'nilaiHarianJenis']);
     Route::get('tahun', [SiswaController::class, 'tahun']);
+    Route::get('absenPelajaran', [SiswaController::class, 'absenPelajaran']);
 });
 Route::get('semester', [SiswaController::class, 'semester']);
-Route::get('absen', [SiswaController::class, 'coba']);
 Route::get('mapel', [SiswaController::class, 'maple']);
 Route::get('tahunAbsen', [SiswaController::class, 'tahunAbsen']);
 

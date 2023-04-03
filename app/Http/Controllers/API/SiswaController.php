@@ -364,45 +364,109 @@ class SiswaController extends Controller
         $year = $request->input('year');
         $month = $request->input('month');
         $data = PhsiswaModel::where('nis','=',Auth::user()->nis)
+                            ->WhereMonth('ts','=',$month)
                             ->whereYear('ts','=',$year);
-        if ($month) {
-            $data->WhereMonth('ts','=',$month);
-        }
+        $data2 = PhsiswaModel::where('nis','=',Auth::user()->nis)
+                            ->WhereMonth('ts','=',$month)
+                            ->whereYear('ts','=',$year);
+
+        $dataHadir = $data->where('hadir','=','1')
+                            ->count();
+        $dataIjin = $data->where('ijin','=','1')
+                            ->count();
+        $dataSakit = $data->where('sakit','=','1')
+                            ->count();
+        $dataAlpa = $data->where('alpa','=','1')
+                            ->count();
                             
         return response()->json([
             'code' => 200,
             'status' => 'success',
-            'data' => $data->get(),
+            'data' => $data2->get(),
+            'dataHitung' => [
+                'hadir' => $dataHadir,
+                'ijin' => $dataIjin,
+                'sakit' => $dataSakit,
+                'alpa' => $dataAlpa,
+            ],
         ]);
     }
 
-    public function coba()
+    public function pHarianSiswaHitung(Request $request)
     {
-        $nis='21220002';
-        $year=2023;
-        $results = DB::select('
+        $year = $request->input('year');
+        $month = $request->input('month');
+        $dataHadir='';
+        $data = PhsiswaModel::where('nis','=',Auth::user()->nis)
+                            ->whereYear('ts','=',$year)
+                            ->WhereMonth('ts','=',$month);
+        $dataHadir = $data->where('hadir','=','1')
+                            ->count();
+        $dataIjin = $data->where('ijin','=','1')
+                            ->count();
+        $dataSakit = $data->where('sakit','=','1')
+                            ->count();
+        $dataAlpa = $data->where('alpa','=','1')
+                            ->count();
+        
+                            
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => [
+                'hadir' => $dataHadir,
+                'ijin' => $dataIjin,
+                'sakit' => $dataSakit,
+                'alpa' => $dataAlpa,
+            ],
+        ]);
+    }
+
+    public function absenPelajaran(Request $request)
+    {
+        $nis=Auth::user()->nis;
+        $year=$request->input('year');
+        // b.idpelajaran,
+        // c.nama,
+        $results = DB::select("
         SELECT 
-            b.idpelajaran,
-            c.nama,
             YEAR(a.ts) AS tahun, 
             MONTH(a.ts) AS bulan, 
             COUNT(CASE WHEN a.statushadir = 0 THEN 1 ELSE NULL END) AS hadir,
             COUNT(CASE WHEN a.statushadir = 1 THEN 1 ELSE NULL END) AS sakit,
             COUNT(CASE WHEN a.statushadir = 2 THEN 1 ELSE NULL END) AS ijin,
             COUNT(CASE WHEN a.statushadir = 3 THEN 1 ELSE NULL END) AS alpa,
-            COUNT(CASE WHEN a.statushadir = 4 THEN 1 ELSE NULL END) AS cuti
+            COUNT(CASE WHEN a.statushadir = 4 THEN 1 ELSE NULL END) AS cuti,
+
+            CASE (MONTH(a.ts)) 
+                    WHEN '1' THEN 'Januari'
+                    WHEN '2' THEN 'Februari'
+                    WHEN '3' THEN 'Maret'
+                    WHEN '4' THEN 'April'
+                    WHEN '5' THEN 'Mei'
+                    WHEN '6' THEN 'Juni'
+                    WHEN '7' THEN 'Juli'
+                    WHEN '8' THEN 'Agustus'
+                    WHEN '9' THEN 'September'
+                    WHEN '10' THEN 'Oktober'
+                    WHEN '11' THEN 'November'
+                    WHEN '12' THEN 'Desember'
+                    ELSE (MONTH(a.ts))
+                END AS namaBulan
+            
         FROM 
             ppsiswa a
             inner join presensipelajaran b on a.idpp=b.replid
             inner join pelajaran c on b.idpelajaran=c.replid
         where 
-            a.nis='.$nis.' and year(a.ts)='.$year.'
+            a.nis='$nis' and year(a.ts)='$year'
         GROUP BY 
             YEAR(a.ts), 
-            MONTH(a.ts),
-            c.nama,
-            b.idpelajaran;
-        ');
+            MONTH(a.ts), 
+            namaBulan
+            ");
+            // c.nama,
+            // b.idpelajaran;
 
         return response()->json([
             'code' => 200,
