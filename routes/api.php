@@ -21,18 +21,33 @@ Route::middleware('auth:api')->group(function(){
     Route::post('update', [UserController::class, 'updateProfile']);
     Route::get('dataUser', [UserController::class, 'fetch']);
     
+    //Data SPP siswa
     Route::get('dataSpp', [SiswaController::class, 'sppSiswa']);
-    Route::get('dataSiswa', [SiswaController::class, 'all']);
     Route::get('sppDetail', [SiswaController::class, 'sppDetail']);
+
+    //Data Siswa
+    Route::get('dataSiswa', [SiswaController::class, 'all']);
+
+    //Data Nilai Siswa
     Route::get('nilaiRapor', [SiswaController::class, 'nilaiRapor']);
-    Route::get('absenHarianSiswa', [SiswaController::class, 'pHarianSiswa']);
-    Route::get('absenHarianSiswaHitung', [SiswaController::class, 'pHarianSiswaHitung']);
     Route::get('nilaiRaporD', [SiswaController::class, 'nilaiRaporD']);
     Route::get('nilaiRaporPancasila', [SiswaController::class, 'nilaiRaporPancasila']);
-    Route::get('nilaiHarian', [SiswaController::class, 'nilaiHarian']);
-    Route::get('nilaiHarianJenis', [SiswaController::class, 'nilaiHarianJenis']);
+
+        //Data Nilai Harian
+        Route::get('nilaiHarian', [SiswaController::class, 'nilaiHarian']);
+        Route::get('nilaiHarianJenis', [SiswaController::class, 'nilaiHarianJenis']);
+    
+    //Data Absen Siswa
+    Route::get('absenHarianSiswa', [SiswaController::class, 'pHarianSiswa']);
+    Route::get('absenHarianSiswaHitung', [SiswaController::class, 'pHarianSiswaHitung']);
+
+        //Data Absen Pelajaran
+        Route::get('absenPelajaran', [SiswaController::class, 'absenPelajaran']);
+        Route::get('absenPelajaranDetail', [SiswaController::class, 'absenPelajaranDetail']);
+
+    //Data Tahun Ajaran
     Route::get('tahun', [SiswaController::class, 'tahun']);
-    Route::get('absenPelajaran', [SiswaController::class, 'absenPelajaran']);
+    
 });
 Route::get('semester', [SiswaController::class, 'semester']);
 Route::get('mapel', [SiswaController::class, 'maple']);

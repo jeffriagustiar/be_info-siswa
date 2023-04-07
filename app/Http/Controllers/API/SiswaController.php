@@ -475,6 +475,43 @@ class SiswaController extends Controller
         ]);
     }
 
+    public function absenPelajaranDetail(Request $request)
+    {
+        $nis=Auth::user()->nis; //21220025
+        $year=$request->input('year'); //2023
+        $month=$request->input('month'); //1
+        $status=$request->input('status'); //0
+        /*
+            ? keterangan status
+            ? 0 hadir
+            ? 1 sakit
+            ? 2 ijin
+            ? 3 alpa
+        */
+
+        $results = DB::select("
+        SELECT 
+           b.tanggal,b.jam ,c.nama
+        FROM 
+            ppsiswa a
+            inner join presensipelajaran b on a.idpp=b.replid
+            inner join pelajaran c on b.idpelajaran=c.replid
+        where 
+            a.nis='$nis' 
+            and month(a.ts)='$month' 
+            and year(a.ts)='$year' 
+            and a.statushadir='$status'
+        ");
+            // c.nama,
+            // b.idpelajaran;
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $results,
+        ]);
+    }
+
     public function tahunAbsen()
     {
         $currentYear = date('Y');
