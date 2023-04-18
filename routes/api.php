@@ -36,6 +36,7 @@ Route::middleware('auth:api')->group(function(){
         //Data Nilai Harian
         Route::get('nilaiHarian', [SiswaController::class, 'nilaiHarian']);
         Route::get('nilaiHarianJenis', [SiswaController::class, 'nilaiHarianJenis']);
+        Route::get('mapelNilai', [SiswaController::class, 'mapelNilai']);
     
     //Data Absen Siswa
     Route::get('absenHarianSiswa', [SiswaController::class, 'pHarianSiswa']);

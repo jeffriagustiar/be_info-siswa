@@ -306,6 +306,41 @@ class SiswaController extends Controller
         ]);
     }
 
+    public function mapelNilai(Request $request)
+    {
+        $nis = Auth::user()->nis; //21220025
+        $jenis = $request->input('jenis'); //KMK
+        $sem = $request->input('sem');// 21
+        $tahun = $request->input('tahun'); //2022/2023
+        $data = DB::select("
+            select 
+                b.idpelajaran,d.kode,d.nama
+            from 
+                nilaiujian a 
+            inner join ujian b on a.idujian=b.replid
+            inner join pelajaran d on b.idpelajaran=d.replid
+            inner join kelompokpelajaran c on d.idkelompok=c.replid
+        
+            inner join kelas e on b.idkelas=e.replid
+            inner join tahunajaran f on f.replid=e.idtahunajaran
+        
+            where 
+                a.nis='$nis' 
+                and f.tahunajaran='$tahun' 
+                and b.idsemester='$sem'
+                and c.kode='$jenis'
+            GROUP BY
+                b.idpelajaran,d.kode,d.nama
+            ORDER BY
+                d.nama
+        ");
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $data,
+        ]);
+    }
+
     public function maple(Request $request)
     {
         $jenis = $request->input('jenis');
@@ -512,12 +547,83 @@ class SiswaController extends Controller
         ]);
     }
 
+    public function absenPerPelajaranMapel(Request $request)
+    {
+        $nis=Auth::user()->nis; //21220025
+        $year=$request->input('year'); //2023
+        $month=$request->input('month'); //1
+
+        $results = DB::select("
+        SELECT 
+           b.idpelajaran,
+           c.nama
+        FROM 
+            ppsiswa a
+            inner join presensipelajaran b on a.idpp=b.replid
+            inner join pelajaran c on b.idpelajaran=c.replid
+        where 
+            a.nis='$nis' 
+            and month(a.ts)='$month' 
+            and year(a.ts)='$year'
+        GROUP BY 
+            b.idpelajaran,c.nama
+        ");
+            // c.nama,
+            // b.idpelajaran;
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $results,
+        ]);
+    }
+
+    public function absenPerPelajaranMapelDetail(Request $request)
+    {
+        $nis=Auth::user()->nis; //21220025
+        $year=$request->input('year'); //2023
+        $month=$request->input('month'); //1
+        $mapel=$request->input('mapel'); //49
+
+        $results = DB::select("
+        SELECT 
+            YEAR(a.ts) AS tahun, 
+            MONTH(a.ts) AS bulan, 
+            COUNT(CASE WHEN a.statushadir = 0 THEN 1 ELSE NULL END) AS hadir,
+            COUNT(CASE WHEN a.statushadir = 1 THEN 1 ELSE NULL END) AS sakit,
+            COUNT(CASE WHEN a.statushadir = 2 THEN 1 ELSE NULL END) AS ijin,
+            COUNT(CASE WHEN a.statushadir = 3 THEN 1 ELSE NULL END) AS alpa,
+            COUNT(CASE WHEN a.statushadir = 4 THEN 1 ELSE NULL END) AS cuti
+            
+        FROM 
+            ppsiswa a
+            inner join presensipelajaran b on a.idpp=b.replid
+            inner join pelajaran c on b.idpelajaran=c.replid
+        where 
+            a.nis='$nis' 
+            and year(a.ts)='$year' 
+            and month(a.ts)='$month' 
+            and b.idpelajaran='$mapel'
+        GROUP BY 
+            YEAR(a.ts), 
+            MONTH(a.ts);
+        ");
+            // c.nama,
+            // b.idpelajaran;
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $results,
+        ]);
+    }
+
     public function tahunAbsen()
     {
         $currentYear = date('Y');
     
         // Calculate the year 5 years ago
-        $fiveYearsAgo = $currentYear - 3;
+        $fiveYearsAgo = $currentYear - 4;
 
         // Generate an array containing the years between $fiveYearsAgo and $currentYear
         $years = range($fiveYearsAgo, $currentYear);
