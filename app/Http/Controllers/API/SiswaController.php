@@ -556,7 +556,8 @@ class SiswaController extends Controller
         $results = DB::select("
         SELECT 
            b.idpelajaran,
-           c.nama
+           c.nama,
+           c.kode
         FROM 
             ppsiswa a
             inner join presensipelajaran b on a.idpp=b.replid
@@ -566,7 +567,7 @@ class SiswaController extends Controller
             and month(a.ts)='$month' 
             and year(a.ts)='$year'
         GROUP BY 
-            b.idpelajaran,c.nama
+            b.idpelajaran,c.nama,c.kode
         ");
             // c.nama,
             // b.idpelajaran;
@@ -587,26 +588,26 @@ class SiswaController extends Controller
 
         $results = DB::select("
         SELECT 
-            YEAR(a.ts) AS tahun, 
-            MONTH(a.ts) AS bulan, 
-            COUNT(CASE WHEN a.statushadir = 0 THEN 1 ELSE NULL END) AS hadir,
-            COUNT(CASE WHEN a.statushadir = 1 THEN 1 ELSE NULL END) AS sakit,
-            COUNT(CASE WHEN a.statushadir = 2 THEN 1 ELSE NULL END) AS ijin,
-            COUNT(CASE WHEN a.statushadir = 3 THEN 1 ELSE NULL END) AS alpa,
-            COUNT(CASE WHEN a.statushadir = 4 THEN 1 ELSE NULL END) AS cuti
+            CASE (a.statushadir) 
+                WHEN '0' THEN 'Hadir'
+                WHEN '1' THEN 'Sakit'
+                WHEN '2' THEN 'Ijin'
+                WHEN '3' THEN 'Alpa'
+                WHEN '4' THEN 'Cuti'
+                ELSE (a.statushadir)
+            END AS statusHadir,
+            b.keterangan,
+            b.materi
             
         FROM 
             ppsiswa a
             inner join presensipelajaran b on a.idpp=b.replid
             inner join pelajaran c on b.idpelajaran=c.replid
         where 
-            a.nis='$nis' 
-            and year(a.ts)='$year' 
-            and month(a.ts)='$month' 
-            and b.idpelajaran='$mapel'
-        GROUP BY 
-            YEAR(a.ts), 
-            MONTH(a.ts);
+            a.nis='21220025' 
+            and year(a.ts)='2023' 
+            and month(a.ts)='1' 
+            and b.idpelajaran='49'
         ");
             // c.nama,
             // b.idpelajaran;
