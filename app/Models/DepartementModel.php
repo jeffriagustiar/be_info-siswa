@@ -5,35 +5,29 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Kelas extends Model
+class DepartementModel extends Model
 {
     use HasFactory;
     protected $connection = 'mysql';
-    protected $table = 'kelas';
+    protected $table = 'tahunajaran';
      
     public $timestamps = false;
 
     protected $fillable = [
         'replid',
-        'kelas',
-        'idtahunajaran',
-        'kapasitas',
-        'nipwali',
+        'tahunajaran',
+        'departemen',
+        'tglmulai',
+        'tglakhir',
         'aktif',
         'keterangan',
-        'idtingkat',
     ];
-
+    
     protected $hidden = [
         'info1',
         'info2',
         'info3',
-        'ts',
         'token',
         'issync',
     ];
-
-    public function departement(){
-        return $this->belongsTo(DepartementModel::class,'idtahunajaran','replid');
-    }
 }

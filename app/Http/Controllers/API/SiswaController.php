@@ -8,15 +8,12 @@ use App\Models\NapModel;
 use App\Models\PhsiswaModel;
 use Illuminate\Http\Request;
 use App\Models\PenerimaanSpp;
-use App\Models\AturannhbModel;
-use App\Models\PelajaranModel;
-use App\Models\KomenRaporModel;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\DepartementModel;
+use App\Models\Kelas;
 use App\Models\SemesterModel;
-use App\Models\TahunModel;
 use Illuminate\Support\Facades\Auth;
-use PhpParser\Node\Expr\Cast\Double;
 
 class SiswaController extends Controller
 {
@@ -27,7 +24,7 @@ class SiswaController extends Controller
             return response()->json([
                 'code' => 200,
                 'status' => 'success',
-                'data' => Siswa::with(['kelas'])->find($nis)
+                'data' => Siswa::with(['kelas','kelas.departement'])->find($nis)
             ]);
         }else{
             return response()->json([
@@ -183,6 +180,7 @@ class SiswaController extends Controller
         $tipe = 'D';
         $tahun = $request->input('tahun'); //2022/2023
         $mapel = $request->input('mapel'); //136
+        $depar = Auth::user()->kelas->departement->departemen;
         $data2 = DB::select(" 
             SELECT 
                 d.nama,a.idaturan,b.nama,a.nilaiangka,
@@ -217,12 +215,13 @@ class SiswaController extends Controller
                 inner join tahunajaran i on h.idtahunajaran=i.replid
             
             where 
-                d.nis='$nis'and 
-                g.idsemester='$sem' and 
-                f.kode='$jenis' and 
-                e.dasarpenilaian like '%$tipe%' and 
-                i.tahunajaran='$tahun' and 
-                a.idpelajaran='$mapel'
+                d.nis='$nis'
+                and g.idsemester='$sem' 
+                and f.kode='$jenis' 
+                and e.dasarpenilaian like '%$tipe%' 
+                and i.tahunajaran='$tahun' 
+                and a.idpelajaran='$mapel'
+                and b.departemen='$depar'
         ");
         return response()->json([
             'code' => 200,
@@ -233,10 +232,8 @@ class SiswaController extends Controller
 
     public function nilaiHarian(Request $request)
     {
-        // $mapel = $request->input('mapel');
         $jenis = $request->input('jenis'); //2942
-        // $sem = $request->input('sem');
-        // $tahun = $request->input('tahun'); //2022/2023
+        $depar = Auth::user()->kelas->departement->departemen;
         $nis = Auth::user()->nis;
         $data = DB::select("
             select 
@@ -253,6 +250,7 @@ class SiswaController extends Controller
             where 
                 a.nis='$nis' 
                 and c.replid='$jenis'
+                and d.departemen='$depar'
             ORDER BY 
                 c.jenisujian ASC;
             
@@ -276,6 +274,7 @@ class SiswaController extends Controller
         $sem = $request->input('sem');
         $tahun = $request->input('tahun'); //2022/2023
         $nis = Auth::user()->nis; //21220025
+        $depar = Auth::user()->kelas->departement->departemen;
         $data = DB::select("
             select 
                 c.replid,c.jenisujian
@@ -293,6 +292,7 @@ class SiswaController extends Controller
                 and b.idpelajaran='$mapel' 
                 and f.tahunajaran='$tahun' 
                 and b.idsemester='$sem'
+                and d.departemen='$depar'
             GROUP by 
                 c.replid, 
                 c.jenisujian
@@ -312,6 +312,7 @@ class SiswaController extends Controller
         $jenis = $request->input('jenis'); //KMK
         $sem = $request->input('sem');// 21
         $tahun = $request->input('tahun'); //2022/2023
+        $depar = Auth::user()->kelas->departement->departemen;
         $data = DB::select("
             select 
                 b.idpelajaran,d.kode,d.nama
@@ -329,6 +330,7 @@ class SiswaController extends Controller
                 and f.tahunajaran='$tahun' 
                 and b.idsemester='$sem'
                 and c.kode='$jenis'
+                and d.departemen='$depar'
             GROUP BY
                 b.idpelajaran,d.kode,d.nama
             ORDER BY
@@ -344,6 +346,7 @@ class SiswaController extends Controller
     public function maple(Request $request)
     {
         $jenis = $request->input('jenis');
+        $depar = Auth::user()->kelas->departement->departemen;
         $data = DB::select("
             select 
                 a.replid,a.nama 
@@ -352,6 +355,7 @@ class SiswaController extends Controller
                 inner join kelompokpelajaran b on a.idkelompok=b.replid
             where 
                 b.kode='$jenis'
+                and a.departemen='$depar'
         ");
         return response()->json([
             'code' => 200,
@@ -362,7 +366,7 @@ class SiswaController extends Controller
 
     public function semester()
     {
-        $data = SemesterModel::all();
+        $data = SemesterModel::where('departemen',Auth::user()->kelas->departement->departemen)->get();
         return response()->json([
             'code' => 200,
             'status' => 'success',
@@ -373,6 +377,7 @@ class SiswaController extends Controller
     public function tahun()
     {
         $nis = Auth::user()->nis;
+        $depar = Auth::user()->kelas->departement->departemen;
         // $data = TahunModel::orderBy("tahunajaran", "asc")->get();
         $data = DB::select("
             select 
@@ -384,6 +389,7 @@ class SiswaController extends Controller
                 inner join tahunajaran d on c.idtahunajaran=d.replid  
             where 
                 a.nis='$nis'
+                and d.departemen='$depar'
             GROUP by 
                 d.tahunajaran,d.replid,d.departemen
             ");
@@ -461,6 +467,7 @@ class SiswaController extends Controller
     {
         $nis=Auth::user()->nis;
         $year=$request->input('year');
+        $depar = Auth::user()->kelas->departement->departemen;
         // b.idpelajaran,
         // c.nama,
         $results = DB::select("
@@ -494,7 +501,9 @@ class SiswaController extends Controller
             inner join presensipelajaran b on a.idpp=b.replid
             inner join pelajaran c on b.idpelajaran=c.replid
         where 
-            a.nis='$nis' and year(a.ts)='$year'
+            a.nis='$nis' 
+            and year(a.ts)='$year'
+            and c.departemen='$depar'
         GROUP BY 
             YEAR(a.ts), 
             MONTH(a.ts), 
@@ -516,6 +525,7 @@ class SiswaController extends Controller
         $year=$request->input('year'); //2023
         $month=$request->input('month'); //1
         $status=$request->input('status'); //0
+        $depar = Auth::user()->kelas->departement->departemen;
         /*
             ? keterangan status
             ? 0 hadir
@@ -536,6 +546,7 @@ class SiswaController extends Controller
             and month(a.ts)='$month' 
             and year(a.ts)='$year' 
             and a.statushadir='$status'
+            and c.departemen='$depar'
         ");
             // c.nama,
             // b.idpelajaran;
@@ -551,6 +562,7 @@ class SiswaController extends Controller
     {
         $nis=Auth::user()->nis; //21220025
         $year=$request->input('year'); //2023
+        $depar = Auth::user()->kelas->departement->departemen;
         // $month=$request->input('month'); //1
 
         $results = DB::select("
@@ -565,7 +577,8 @@ class SiswaController extends Controller
         where 
             a.nis='$nis' 
             and year(a.ts)='$year'
-            GROUP BY 
+            and c.departemen='$depar'
+        GROUP BY 
             b.idpelajaran,c.nama,c.kode
         ");
             // and month(a.ts)='$month' 
@@ -585,6 +598,7 @@ class SiswaController extends Controller
         $year=$request->input('year'); //2023
         $month=$request->input('month'); //1
         $mapel=$request->input('mapel'); //49
+        $depar = Auth::user()->kelas->departement->departemen;
 
         $results = DB::select("
         SELECT 
@@ -609,6 +623,7 @@ class SiswaController extends Controller
             and year(a.ts)='$year' 
             and month(a.ts)='$month' 
             and b.idpelajaran='$mapel'
+            and c.departemen='$depar'
         ");
 
         return response()->json([

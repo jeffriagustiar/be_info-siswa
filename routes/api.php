@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\API\SiswaController;
 use App\Http\Controllers\API\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,17 +45,18 @@ Route::middleware('auth:api')->group(function(){
         Route::get('absenPelajaran', [SiswaController::class, 'absenPelajaran']);
         Route::get('absenPelajaranDetail', [SiswaController::class, 'absenPelajaranDetail']);
         
-        //Data Absen Per PElajaran
+        //Data Absen Per Pelajaran
         Route::get('MapelAbsenPerPelajaran', [SiswaController::class, 'absenPerPelajaranMapel']);
         Route::get('MapelAbsenPerPelajaranDetail', [SiswaController::class, 'absenPerPelajaranMapelDetail']);
 
 
     //Data Tahun Ajaran
     Route::get('tahun', [SiswaController::class, 'tahun']);
-    
+    //Data Semester
+    Route::get('semester', [SiswaController::class, 'semester']);
+    //Data Mapel
+    Route::get('mapel', [SiswaController::class, 'maple']);
 });
-Route::get('semester', [SiswaController::class, 'semester']);
-Route::get('mapel', [SiswaController::class, 'maple']);
 Route::get('tahunAbsen', [SiswaController::class, 'tahunAbsen']);
 
 Route::post('login', [UserController::class, 'login']);
