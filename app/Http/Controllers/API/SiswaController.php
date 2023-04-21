@@ -551,7 +551,7 @@ class SiswaController extends Controller
     {
         $nis=Auth::user()->nis; //21220025
         $year=$request->input('year'); //2023
-        $month=$request->input('month'); //1
+        // $month=$request->input('month'); //1
 
         $results = DB::select("
         SELECT 
@@ -564,11 +564,11 @@ class SiswaController extends Controller
             inner join pelajaran c on b.idpelajaran=c.replid
         where 
             a.nis='$nis' 
-            and month(a.ts)='$month' 
             and year(a.ts)='$year'
-        GROUP BY 
+            GROUP BY 
             b.idpelajaran,c.nama,c.kode
         ");
+            // and month(a.ts)='$month' 
             // c.nama,
             // b.idpelajaran;
 
