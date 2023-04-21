@@ -597,20 +597,19 @@ class SiswaController extends Controller
                 ELSE (a.statushadir)
             END AS statusHadir,
             b.keterangan,
-            b.materi
+            b.materi,
+            b.tanggal
             
         FROM 
             ppsiswa a
             inner join presensipelajaran b on a.idpp=b.replid
             inner join pelajaran c on b.idpelajaran=c.replid
         where 
-            a.nis='21220025' 
-            and year(a.ts)='2023' 
-            and month(a.ts)='1' 
-            and b.idpelajaran='49'
+            a.nis='$nis' 
+            and year(a.ts)='$year' 
+            and month(a.ts)='$month' 
+            and b.idpelajaran='$mapel'
         ");
-            // c.nama,
-            // b.idpelajaran;
 
         return response()->json([
             'code' => 200,
