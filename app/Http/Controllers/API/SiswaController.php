@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use App\Models\Spp;
+use App\Models\Kelas;
 use App\Models\Siswa;
 use App\Models\NapModel;
 use App\Models\PhsiswaModel;
 use Illuminate\Http\Request;
 use App\Models\PenerimaanSpp;
+use App\Models\SemesterModel;
+use App\Models\DepartementModel;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\DepartementModel;
-use App\Models\Kelas;
-use App\Models\SemesterModel;
+use App\Models\PresensiHarianModel;
 use Illuminate\Support\Facades\Auth;
 
 class SiswaController extends Controller
@@ -665,5 +667,69 @@ class SiswaController extends Controller
             'status' => 'success',
             'data' => $result,
         ]);
+    }
+
+    public function absenSiswa(Request $request)
+    {
+        try {
+            $request->validate([
+                'hadir' => 'required',
+            ]);
+
+            $jam = date("H:i:s");
+            $date = date('Y-m-d');
+            $dataMasuk=PhsiswaModel::where('nis','tes2')->where('ts','like',"%{$date}%");
+
+            if ($jam > '05:00' && $jam < '12:00') {
+            // if ($jam > '17:00' && $jam < '19:00') {
+
+                $pesan = 'Masuk';
+                if ($dataMasuk->get() -> isEmpty()) {
+                    $pesan2='Berhasil Absen';
+                    $dataAbsen1=PresensiHarianModel::create([
+                        'idkelas' => '123',
+                        'idsemester' => '0',
+                        'tanggal1' => $date,
+                        'tanggal2' => $date,
+                        'hariaktif' => 1,
+                    ]);
+                    PhsiswaModel::create([
+                        'idpresensi' => $dataAbsen1->replid,
+                        'nis' => 'tes2',
+                        'hadir' => 1,
+                        'masuk' => $jam
+                    ]);
+                } else {
+                    $pesan2='Absen sudah diambil';
+                }
+
+            }else if($jam >= '12:00' && $jam < '20:00'){
+            // }else if($jam >= '19:00' && $jam < '20:00'){
+
+                $pesan = 'Pulang';
+                if ($dataMasuk->get() -> isEmpty()) {
+                    $pesan2='Anda tidak absen masuk';
+                } else {
+                    $pesan2='Berhasil Absen';
+                    $dataMasuk->update([
+                        'pulang' => $jam
+                    ]);
+                }
+
+            }else{
+                $pesan = 'belum waktu masuk dan pulang';
+            }
+
+            return response()->json([
+                'pesan' => $pesan,
+                'pesan2' => $pesan2,
+                'jam dan menit' => $jam,
+            ]);
+        } catch (Exception $error) {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'error' => $error,
+            ]);
+        }
     }
 }

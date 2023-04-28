@@ -5,33 +5,28 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PhsiswaModel extends Model
+class PresensiHarianModel extends Model
 {
     use HasFactory;
     protected $connection = 'mysql';
-    protected $table = 'phsiswa';
+    protected $table = 'presensiharian';
     protected $primaryKey = 'replid';
     public $timestamps = false;
 
     protected $fillable = [
         'replid',
-        'idpresensi',
-        'nis',
-        'hadir',
-        'ijin',
-        'sakit',
-        'cuti',
-        'alpa',
-        'keterangan',
-        'ts',
-        'masuk',
-        'pulang'
+        'idkelas',
+        'idsemester',
+        'tanggal1',
+        'tanggal2',
+        'hariaktif',
     ];
 
     protected $hidden = [
         'info1',
         'info2',
         'info3',
+        'ts',
         'token',
         'issync',
     ];
