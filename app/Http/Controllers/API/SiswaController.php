@@ -14,6 +14,7 @@ use App\Models\SemesterModel;
 use App\Models\DepartementModel;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\KoordinatLokasiModel;
 use App\Models\PresensiHarianModel;
 use Illuminate\Support\Facades\Auth;
 
@@ -678,7 +679,7 @@ class SiswaController extends Controller
 
             $jam = date("H:i:s");
             $date = date('Y-m-d');
-            $dataMasuk=PhsiswaModel::where('nis','tes2')->where('ts','like',"%{$date}%");
+            $dataMasuk=PhsiswaModel::where('nis','tes3')->where('ts','like',"%{$date}%");
 
             if ($jam > '05:00' && $jam < '12:00') {
             // if ($jam > '17:00' && $jam < '19:00') {
@@ -731,5 +732,19 @@ class SiswaController extends Controller
                 'error' => $error,
             ]);
         }
+    }
+
+    public function koordinatLokasiSekolah()
+    {
+        $id = Auth::user()->kelas->departement->departemen;
+
+        $result = KoordinatLokasiModel::where('departemen',$id)->get();
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $result,
+        ]);
+
     }
 }
