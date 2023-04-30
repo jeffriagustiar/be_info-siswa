@@ -734,11 +734,42 @@ class SiswaController extends Controller
         }
     }
 
+    public function cekSudahAbsenSiswa()
+    {
+        $date = date('Y-m-d');
+        $result = PhsiswaModel::where('nis',Auth::user()->nis)->where('ts','like',"%{$date}%");
+        if ($result->get() -> isEmpty()) {
+            $cek = 'tidak ada';
+        }else {
+            $cek = 'ada';
+        }
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'cek' => $cek,
+            'data' => $result->limit(1)->first(),
+        ]);
+    }
+
     public function koordinatLokasiSekolah()
     {
         $id = Auth::user()->kelas->departement->departemen;
 
         $result = KoordinatLokasiModel::where('departemen',$id)->get();
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $result,
+        ]);
+
+    }
+
+    public function koordinatLokasiSekolahSatu()
+    {
+        $id = Auth::user()->kelas->departement->departemen;
+
+        $result = KoordinatLokasiModel::where('departemen',$id)->limit(1)->first();
 
         return response()->json([
             'code' => 200,

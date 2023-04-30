@@ -51,6 +51,8 @@ Route::middleware('auth:api')->group(function(){
 
     //Ambil Absen Siswa
     Route::get('koordinatLokasiSekolah', [SiswaController::class, 'koordinatLokasiSekolah']);
+    Route::get('koordinatLokasiSekolahSatu', [SiswaController::class, 'koordinatLokasiSekolahSatu']);
+    Route::get('cekSudahAbsenSiswa', [SiswaController::class, 'cekSudahAbsenSiswa']);
 
     //Data Tahun Ajaran
     Route::get('tahun', [SiswaController::class, 'tahun']);
