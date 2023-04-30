@@ -673,22 +673,21 @@ class SiswaController extends Controller
     public function absenSiswa(Request $request)
     {
         try {
-            $request->validate([
-                'hadir' => 'required',
-            ]);
 
             $jam = date("H:i:s");
             $date = date('Y-m-d');
-            $dataMasuk=PhsiswaModel::where('nis','tes3')->where('ts','like',"%{$date}%");
+            $nis = Auth::user()->nis;
+            $dataMasuk=PhsiswaModel::where('nis',$nis)->where('ts','like',"%{$date}%");
+            $id=$dataMasuk->first()->replid;
 
-            if ($jam > '05:00' && $jam < '12:00') {
+            if ($jam > '05:00' && $jam < '10:00') {
             // if ($jam > '17:00' && $jam < '19:00') {
 
                 $pesan = 'Masuk';
                 if ($dataMasuk->get() -> isEmpty()) {
                     $pesan2='Berhasil Absen';
                     $dataAbsen1=PresensiHarianModel::create([
-                        'idkelas' => '123',
+                        'idkelas' => Auth::user()->kelas->replid,
                         'idsemester' => '0',
                         'tanggal1' => $date,
                         'tanggal2' => $date,
@@ -696,7 +695,7 @@ class SiswaController extends Controller
                     ]);
                     PhsiswaModel::create([
                         'idpresensi' => $dataAbsen1->replid,
-                        'nis' => 'tes2',
+                        'nis' => $nis,
                         'hadir' => 1,
                         'masuk' => $jam
                     ]);
@@ -711,8 +710,9 @@ class SiswaController extends Controller
                 if ($dataMasuk->get() -> isEmpty()) {
                     $pesan2='Anda tidak absen masuk';
                 } else {
-                    $pesan2='Berhasil Absen';
-                    $dataMasuk->update([
+                    $dataM=PhsiswaModel::where('nis',$nis)->where('replid',$id);
+                    $pesan2='Berhasil Absen Pulang';
+                    $dataM->update([
                         'pulang' => $jam
                     ]);
                 }
@@ -737,7 +737,7 @@ class SiswaController extends Controller
     public function cekSudahAbsenSiswa()
     {
         $date = date('Y-m-d');
-        $result = PhsiswaModel::where('nis',Auth::user()->nis)->where('ts','like',"%{$date}%");
+        $result = PhsiswaModel::where('nis',Auth::user()->nis)->where('ts','like',"%{$date}%")->whereNotNull('masuk');
         if ($result->get() -> isEmpty()) {
             $cek = 'tidak ada';
         }else {

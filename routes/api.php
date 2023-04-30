@@ -53,6 +53,7 @@ Route::middleware('auth:api')->group(function(){
     Route::get('koordinatLokasiSekolah', [SiswaController::class, 'koordinatLokasiSekolah']);
     Route::get('koordinatLokasiSekolahSatu', [SiswaController::class, 'koordinatLokasiSekolahSatu']);
     Route::get('cekSudahAbsenSiswa', [SiswaController::class, 'cekSudahAbsenSiswa']);
+    Route::post('ambilAbsenSiswa', [SiswaController::class, 'AbsenSiswa']);
 
     //Data Tahun Ajaran
     Route::get('tahun', [SiswaController::class, 'tahun']);
@@ -64,4 +65,3 @@ Route::middleware('auth:api')->group(function(){
 Route::get('tahunAbsen', [SiswaController::class, 'tahunAbsen']);
 
 Route::post('login', [UserController::class, 'login']);
-Route::post('ambilAbsenSiswa', [SiswaController::class, 'AbsenSiswa']);
