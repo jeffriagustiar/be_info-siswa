@@ -35,4 +35,8 @@ class PhsiswaModel extends Model
         'token',
         'issync',
     ];
+
+    public function siswa(){
+        return $this->belongsTo(Siswa::class, 'nis','nis');
+    }
 }

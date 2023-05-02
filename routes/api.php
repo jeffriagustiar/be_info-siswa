@@ -55,6 +55,8 @@ Route::middleware('auth:api')->group(function(){
     Route::get('cekSudahAbsenSiswa', [SiswaController::class, 'cekSudahAbsenSiswa']);
     Route::post('ambilAbsenSiswa', [SiswaController::class, 'AbsenSiswa']);
 
+    //Data Siswa Tercepat Absen
+    Route::get('siswaTercepatAmbilAbsen', [SiswaController::class, 'tercepatAmbilAbsen']);
     //Data Tahun Ajaran
     Route::get('tahun', [SiswaController::class, 'tahun']);
     //Data Semester

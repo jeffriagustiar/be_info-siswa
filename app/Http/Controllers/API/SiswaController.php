@@ -778,4 +778,17 @@ class SiswaController extends Controller
         ]);
 
     }
+
+    public function tercepatAmbilAbsen()
+    {
+        $date = date('Y-m-d');
+        // $date = '2023-04-31';
+        $result = PhsiswaModel::with(['siswa','siswa.kelas'])->where('ts','like',"%{$date}%")->limit(20)->orderBy('masuk','asc')->get();
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $result,
+        ]);
+    }
 }
