@@ -672,13 +672,13 @@ class SiswaController extends Controller
 
     public function absenSiswa(Request $request)
     {
-        try {
+
+        // try {
 
             $jam = date("H:i:s");
             $date = date('Y-m-d');
             $nis = Auth::user()->nis;
             $dataMasuk=PhsiswaModel::where('nis',$nis)->where('ts','like',"%{$date}%");
-            $id=$dataMasuk->first()->replid;
 
             if ($jam > '05:00' && $jam < '10:00') {
             // if ($jam > '17:00' && $jam < '19:00') {
@@ -710,7 +710,7 @@ class SiswaController extends Controller
                 if ($dataMasuk->get() -> isEmpty()) {
                     $pesan2='Anda tidak absen masuk';
                 } else {
-                    $dataM=PhsiswaModel::where('nis',$nis)->where('replid',$id);
+                    $dataM=PhsiswaModel::where('nis',$nis)->where('replid',$dataMasuk->first()->replid);
                     $pesan2='Berhasil Absen Pulang';
                     $dataM->update([
                         'pulang' => $jam
@@ -726,12 +726,12 @@ class SiswaController extends Controller
                 'pesan2' => $pesan2,
                 'jam dan menit' => $jam,
             ]);
-        } catch (Exception $error) {
-            return response()->json([
-                'message' => 'Something went wrong',
-                'error' => $error,
-            ]);
-        }
+        // } catch (Exception $error) {
+        //     return response()->json([
+        //         'message' => 'Something went wrong',
+        //         'error' => $error,
+        //     ]);
+        // }
     }
 
     public function cekSudahAbsenSiswa()
