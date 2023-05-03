@@ -673,7 +673,7 @@ class SiswaController extends Controller
     public function absenSiswa(Request $request)
     {
 
-        // try {
+        try {
 
             $jam = date("H:i:s");
             $date = date('Y-m-d');
@@ -726,12 +726,12 @@ class SiswaController extends Controller
                 'pesan2' => $pesan2,
                 'jam dan menit' => $jam,
             ]);
-        // } catch (Exception $error) {
-        //     return response()->json([
-        //         'message' => 'Something went wrong',
-        //         'error' => $error,
-        //     ]);
-        // }
+        } catch (Exception $error) {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'error' => $error,
+            ]);
+        }
     }
 
     public function cekSudahAbsenSiswa()
