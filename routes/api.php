@@ -54,7 +54,8 @@ Route::middleware('auth:api')->group(function(){
     Route::get('koordinatLokasiSekolahSatu', [SiswaController::class, 'koordinatLokasiSekolahSatu']);
     Route::get('cekSudahAbsenSiswa', [SiswaController::class, 'cekSudahAbsenSiswa']);
     Route::post('ambilAbsenSiswa', [SiswaController::class, 'AbsenSiswa']);
-
+    
+    
     //Data Siswa Tercepat Absen
     Route::get('siswaTercepatAmbilAbsen', [SiswaController::class, 'tercepatAmbilAbsen']);
     //Data Tahun Ajaran
@@ -64,6 +65,8 @@ Route::middleware('auth:api')->group(function(){
     //Data Mapel
     Route::get('mapel', [SiswaController::class, 'maple']);
 });
+//Data Jadwal Pelajaran
+Route::get('jadwalPelajaran', [SiswaController::class, 'jadwalPelajaran']);
 Route::get('tahunAbsen', [SiswaController::class, 'tahunAbsen']);
 
 Route::post('login', [UserController::class, 'login']);

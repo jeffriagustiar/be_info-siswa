@@ -791,4 +791,26 @@ class SiswaController extends Controller
             'data' => $result,
         ]);
     }
+
+    public function jadwalPelajaran(Request $request)
+    {
+        $idKelas = '136';//Auth::user()->kelas->replid;
+        $hari = $request->input('hari');
+        $result = DB::select("
+            select 
+                a.hari,a.jamke,a.njam,a.jam1,a.jam2,b.kode,b.nama
+            from 
+                jadwal a 
+                inner join pelajaran b on a.idpelajaran=b.replid
+            where 
+                a.idkelas='$idKelas'
+                and a.hari='$hari';
+        ");
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $result,
+        ]);
+    }
 }
