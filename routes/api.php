@@ -27,9 +27,10 @@ Route::middleware('auth:api')->group(function(){
     //Data Siswa
     Route::get('dataSiswa', [SiswaController::class, 'all']);
 
-    //Data Nilai Siswa
+    //Data Nilai Rapor Siswa
     Route::get('nilaiRapor', [SiswaController::class, 'nilaiRapor']);
     Route::get('nilaiRaporD', [SiswaController::class, 'nilaiRaporD']);
+    Route::get('mapelNilaiRaporPancasila', [SiswaController::class, 'mapelNilaiRaporPancasila']);
     Route::get('nilaiRaporPancasila', [SiswaController::class, 'nilaiRaporPancasila']);
 
         //Data Nilai Harian
@@ -67,6 +68,7 @@ Route::middleware('auth:api')->group(function(){
 });
 //Data Jadwal Pelajaran
 Route::get('jadwalPelajaran', [SiswaController::class, 'jadwalPelajaran']);
+Route::get('test', [SiswaController::class, 'test']);
 Route::get('tahunAbsen', [SiswaController::class, 'tahunAbsen']);
 
 Route::post('login', [UserController::class, 'login']);

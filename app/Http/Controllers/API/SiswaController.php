@@ -13,10 +13,11 @@ use App\Models\PenerimaanSpp;
 use App\Models\SemesterModel;
 use App\Models\DepartementModel;
 use Illuminate\Support\Facades\DB;
+use App\Models\PresensiHarianModel;
 use App\Http\Controllers\Controller;
 use App\Models\KoordinatLokasiModel;
-use App\Models\PresensiHarianModel;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class SiswaController extends Controller
 {
@@ -44,6 +45,7 @@ class SiswaController extends Controller
     {
         $nis = Auth::user()->nis;
         $spp = Spp::where('nis',$nis)->first();
+        
         if ($spp) {
             $a = $spp->besar;
             $b = PenerimaanSpp::where('idbesarjtt',$spp->replid)->sum('jumlah');
@@ -126,26 +128,37 @@ class SiswaController extends Controller
         $tipe = $request->input('tipe'); //ASSOF
         $tahun = $request->input('tahun'); //2022/2023
         $data2 = DB::select(" 
-            SELECT 
-                d.nama,a.idaturan,b.nama,a.nilaiangka,a.nilaihuruf,a.idinfo,c.replid,c.idsemester,e.dasarpenilaian,c.komentar,c.jenis,f.kode,f.kelompok, g.nilaimin, i.tahunajaran
-            FROM 
-                nap a 
-                inner join pelajaran b on a.idpelajaran=b.replid 
-                inner join komenrapor c on a.idinfo=c.replid 
-                inner join siswa d on a.nis=d.nis 
-                inner join aturannhb e on a.idaturan=e.replid 
-                inner join kelompokpelajaran f on b.idkelompok=f.replid
-            
-                inner join infonap g on a.idinfo=g.replid
-                inner join kelas h on g.idkelas=h.replid
-                inner join tahunajaran i on h.idtahunajaran=i.replid
-            
-            where 
-                d.nis='$nis'and 
-                g.idsemester='$sem' and 
-                f.kode='$jenis' and 
-                e.dasarpenilaian like '%$tipe%' and 
-                i.tahunajaran='$tahun'
+        select 
+            b.nama,
+            a.idaturan,
+            f.nama,
+            a.nilaiangka,
+            a.nilaihuruf,
+            a.idinfo,
+            e.replid,
+            e.idsemester,
+            h.dasarpenilaian,
+            a.komentar,
+            '-' as jenis,
+            g.kode,
+            g.kelompok,
+            e.nilaimin,
+            d.tahunajaran
+        from 
+            nap a
+            inner join siswa b on a.nis=b.nis
+            inner join kelas c on b.idkelas = c.replid
+            inner join tahunajaran d on d.replid=c.idtahunajaran
+            inner join infonap e on e.replid=a.idinfo
+            inner join pelajaran f on f.replid=e.idpelajaran
+            inner join kelompokpelajaran g on g.replid=f.idkelompok
+            inner join aturannhb h on h.replid= a.idaturan
+        WHERE
+            a.nis='$nis'
+            and d.tahunajaran='$tahun'
+            and e.idsemester='$sem'
+            and h.dasarpenilaian like '%$tipe%'    
+            and g.kode = '$jenis'
         ");
         $data = DB::select("
             SELECT 
@@ -175,6 +188,27 @@ class SiswaController extends Controller
         ]);
     }
 
+    public function mapelNilaiRaporPancasila(Request $request)
+    {
+        $data2 = DB::select(" 
+        select 
+            a.replid,
+            a.kode,
+            a.nama
+        from 
+            pelajaran a
+            INNER join kelompokpelajaran b on a.idkelompok=b.replid
+        WHERE
+        	b.kode='P5'
+        ");
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $data2,
+        ]);
+    }
+    
+
     public function nilaiRaporPancasila(Request $request)
     {
         $nis = Auth::user()->nis;
@@ -185,8 +219,8 @@ class SiswaController extends Controller
         $mapel = $request->input('mapel'); //136
         $depar = Auth::user()->kelas->departement->departemen;
         $data2 = DB::select(" 
-            SELECT 
-                d.nama,a.idaturan,b.nama,a.nilaiangka,
+        select 
+            b.nama,a.idaturan,f.nama,a.nilaiangka,
                 CASE a.nilaihuruf
                     WHEN 'SB' THEN 'Sangat Berkembang'
                     WHEN 'BSH' THEN 'Berkembang Sesuai Harapan'
@@ -194,37 +228,31 @@ class SiswaController extends Controller
                     WHEN 'BB' THEN 'Belum Berkembang'
                     ELSE a.nilaihuruf
                 END as nilaihuruf,
-                a.idinfo,c.replid,c.idsemester,
-                CASE e.dasarpenilaian 
+                a.idinfo,'-' as replid,e.idsemester,
+                CASE h.dasarpenilaian 
                     WHEN 'D1' THEN 'D1 : Beriaman, bertaqwa kepada Tuhan YME dan berakhlak mulia'
                     WHEN 'D2' THEN 'D2 : Bernalar kritis'
                     WHEN 'D3' THEN 'D3 : Mandiri'
                     WHEN 'D4' THEN 'D4 : Kebhinekaan Global'
                     WHEN 'D5' THEN 'D5 : Kreatif'
                     WHEN 'D6' THEN 'D6 : Bergotongroyong'
-                    ELSE e.dasarpenilaian
-                END AS dasarpenilaian,
-                c.komentar,c.jenis,f.kode,f.kelompok, g.nilaimin, i.tahunajaran
-            FROM 
-                nap a 
-                inner join pelajaran b on a.idpelajaran=b.replid 
-                inner join komenrapor c on a.idinfo=c.replid 
-                inner join siswa d on a.nis=d.nis 
-                inner join aturannhb e on a.idaturan=e.replid 
-                inner join kelompokpelajaran f on b.idkelompok=f.replid
-            
-                inner join infonap g on a.idinfo=g.replid
-                inner join kelas h on g.idkelas=h.replid
-                inner join tahunajaran i on h.idtahunajaran=i.replid
-            
-            where 
-                d.nis='$nis'
-                and g.idsemester='$sem' 
-                and f.kode='$jenis' 
-                and e.dasarpenilaian like '%$tipe%' 
-                and i.tahunajaran='$tahun' 
-                and a.idpelajaran='$mapel'
-                and b.departemen='$depar'
+                    ELSE h.dasarpenilaian
+                END AS dasarpenilaian
+        from 
+            nap a
+            inner join siswa b on a.nis=b.nis
+            inner join kelas c on b.idkelas = c.replid
+            inner join tahunajaran d on d.replid=c.idtahunajaran
+            inner join infonap e on e.replid=a.idinfo
+            inner join pelajaran f on f.replid=e.idpelajaran
+            inner join kelompokpelajaran g on g.replid=f.idkelompok
+            inner join aturannhb h on h.replid= a.idaturan
+        WHERE
+            a.nis='$nis'
+            and d.tahunajaran='$tahun'
+            and e.idsemester='$sem'  
+            and g.kode = 'P5'
+            and f.replid='$mapel'
         ");
         return response()->json([
             'code' => 200,
@@ -769,7 +797,10 @@ class SiswaController extends Controller
     {
         $id = Auth::user()->kelas->departement->departemen;
 
-        $result = KoordinatLokasiModel::where('departemen',$id)->limit(1)->first();
+        // $result = KoordinatLokasiModel::where('departemen',$id)->limit(1)->first();
+        $result = Cache::remember('cache_key', 60, function () use ($id) {
+            return KoordinatLokasiModel::where('departemen', $id)->limit(1)->first();
+        });
 
         return response()->json([
             'code' => 200,
@@ -807,6 +838,21 @@ class SiswaController extends Controller
                 and a.hari='$hari';
         ");
 
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $result,
+        ]);
+    }
+
+    public function test()
+    {
+        $result = DB::select("
+            select 
+                *
+            from 
+                kelompokpelajaran 
+        ");
         return response()->json([
             'code' => 200,
             'status' => 'success',
