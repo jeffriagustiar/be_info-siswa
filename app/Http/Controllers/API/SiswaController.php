@@ -847,12 +847,7 @@ class SiswaController extends Controller
 
     public function test()
     {
-        $result = DB::select("
-            select 
-                *
-            from 
-                kelompokpelajaran 
-        ");
+        $result = Kelas::all();
         return response()->json([
             'code' => 200,
             'status' => 'success',
