@@ -55,6 +55,11 @@ Route::middleware('auth:api')->group(function(){
     Route::get('koordinatLokasiSekolahSatu', [SiswaController::class, 'koordinatLokasiSekolahSatu']);
     Route::get('cekSudahAbsenSiswa', [SiswaController::class, 'cekSudahAbsenSiswa']);
     Route::post('ambilAbsenSiswa', [SiswaController::class, 'AbsenSiswa']);
+
+    //Data Tatatertib Sekolah
+    Route::get('catatan', [SiswaController::class, 'catatan']);
+    
+    //Data Catatan Siswa
     
     
     //Data Siswa Tercepat Absen

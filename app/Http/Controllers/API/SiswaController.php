@@ -15,6 +15,7 @@ use App\Models\DepartementModel;
 use Illuminate\Support\Facades\DB;
 use App\Models\PresensiHarianModel;
 use App\Http\Controllers\Controller;
+use App\Models\Ctt_Kategori;
 use App\Models\KoordinatLokasiModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -853,5 +854,16 @@ class SiswaController extends Controller
             'status' => 'success',
             'data' => $result,
         ]);
+    }
+
+    public function catatan(Request $request)
+    {
+        $jenis = $request->input('jenis');
+        $result = Ctt_Kategori::with(['detail'])->where('kategori',$jenis)->get();
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $result,
+        ]);   
     }
 }
