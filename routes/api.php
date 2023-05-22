@@ -60,6 +60,7 @@ Route::middleware('auth:api')->group(function(){
     Route::get('catatan', [SiswaController::class, 'catatan']);
     
     //Data Catatan Siswa
+    Route::get('catatanSiswa', [SiswaController::class, 'catatanSiswa']);
     
     
     //Data Siswa Tercepat Absen
@@ -72,6 +73,7 @@ Route::middleware('auth:api')->group(function(){
     Route::get('mapel', [SiswaController::class, 'maple']);
 });
 //Data Jadwal Pelajaran
+Route::get('totalPointSiswa', [SiswaController::class, 'pointSiswa']);
 Route::get('jadwalPelajaran', [SiswaController::class, 'jadwalPelajaran']);
 Route::get('test', [SiswaController::class, 'test']);
 Route::get('tahunAbsen', [SiswaController::class, 'tahunAbsen']);

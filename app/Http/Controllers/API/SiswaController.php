@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\PresensiHarianModel;
 use App\Http\Controllers\Controller;
 use App\Models\Ctt_Kategori;
+use App\Models\Ctt_Siswa;
 use App\Models\KoordinatLokasiModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -865,5 +866,61 @@ class SiswaController extends Controller
             'status' => 'success',
             'data' => $result,
         ]);   
+    }
+
+    public function catatanSiswa(Request $request)
+    {
+        $nis = Auth::user()->nis;//21220025
+        $jenis = $request->input('jenis');
+        $result = DB::select("
+            SELECT 
+                c.nama_kategori,b.nama_ctt,b.ket,a.tanggal,a.ket,a.point
+            FROM 
+                ctt_siswa a
+                inner join ctt_baik_buruk b on a.id_ctt=b.replid
+                inner join ctt_kategori c on b.id_kategori=c.replid
+            WHERE 
+                a.nis='$nis'
+                and a.acc=1
+                and c.kategori='$jenis'
+        ");
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $result,
+        ]);
+    }
+
+    public function pointSiswa()
+    {
+        $query = Ctt_Siswa::join('ctt_baik_buruk', 'ctt_siswa.id_ctt','=','ctt_baik_buruk.replid')
+                            ->join('ctt_kategori','ctt_baik_buruk.id_kategori','=','ctt_kategori.replid')
+                            ->where('ctt_siswa.acc','=','1')
+                            ->where('ctt_siswa.nis','=','21220025');
+
+        $prestasi2 = clone $query;
+        $prestasi2->where('ctt_kategori.kategori','=','prestasi');
+        $prestasi = $prestasi2->sum('ctt_siswa.point');
+
+        $pelanggaran2 = clone $query;
+        $pelanggaran2->where('ctt_kategori.kategori','=','pelanggaran');
+        $pelanggaran = $pelanggaran2->sum('ctt_siswa.point');
+
+        $hukuman2 = clone $query;
+        $hukuman2->where('ctt_kategori.kategori','=','hukuman');
+        $hukuman = $hukuman2->sum('ctt_siswa.point');
+        
+        $total = $query->sum('ctt_siswa.point');
+        
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => [
+                "prestasi" => $prestasi,
+                "pelanggaran" => $pelanggaran,
+                "hukuman" => $hukuman,
+                "total" => $total
+            ]
+        ]);
     }
 }
