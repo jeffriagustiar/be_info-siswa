@@ -893,10 +893,11 @@ class SiswaController extends Controller
 
     public function pointSiswa()
     {
+        $nis = Auth::user()->nis;
         $query = Ctt_Siswa::join('ctt_baik_buruk', 'ctt_siswa.id_ctt','=','ctt_baik_buruk.replid')
                             ->join('ctt_kategori','ctt_baik_buruk.id_kategori','=','ctt_kategori.replid')
                             ->where('ctt_siswa.acc','=','1')
-                            ->where('ctt_siswa.nis','=','21220025');
+                            ->where('ctt_siswa.nis','=',$nis);
 
         $prestasi2 = clone $query;
         $prestasi2->where('ctt_kategori.kategori','=','prestasi');
