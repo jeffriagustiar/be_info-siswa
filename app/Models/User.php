@@ -72,14 +72,14 @@ class User extends Authenticatable
         'pinsiswa',
         'pinortu',
         'pinortuibu',
+        'tahunmasuk',
+        'idangkatan',
     ];
 
     protected $hidden = [
         'foto',
         'noun',
         'aktif',
-        'tahunmasuk',
-        'idangkatan',
         'status',
         'warga',
         'statusanak',

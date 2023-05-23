@@ -6,11 +6,17 @@ use Exception;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\Guru\UserGuruModel;
 use App\Http\Controllers\Controller;
+use App\Models\Guru\ApiTokenGuruModel;
+use App\Models\Guru\ProfileModel;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpKernel\Profiler\Profile;
 
 class UserController extends Controller
 {
+    // belum dipakai
     public function register(Request $request)
     {
         try {
@@ -43,6 +49,7 @@ class UserController extends Controller
         }
     }
 
+    // login siswa
     public function login(Request $request)
     {
         try {
@@ -73,6 +80,8 @@ class UserController extends Controller
         }
     }
 
+    // ambil data siswa
+    //? belum dipakai
     public function fetch(Request $request)
     {
         return response()->json([
@@ -81,6 +90,8 @@ class UserController extends Controller
         ]);
     }
 
+    // update data siswa
+    //? belum dipakai
     public function updateProfile(Request $request)
     {
         $data = $request->all();
@@ -93,6 +104,7 @@ class UserController extends Controller
         ]);
     }
 
+    //logout siswa
     public function logout(Request $request)
     {
         $token = User::where('nis', $request->nis)->first();
@@ -100,5 +112,68 @@ class UserController extends Controller
         $token->save();
 
         return response()->json([$token ,'Token Revoked']);
+    }
+
+
+    //GURU
+    //? untuk pengolahan data guru
+
+    //login guru
+    public function loginGuru(Request $request)
+    {
+        try {
+            $request->validate([
+                'nip' => 'required',
+                'password' => 'required'
+            ]);
+
+            $user = UserGuruModel::where('login', $request->nip)->first();
+            
+            if ( md5($request->password) != $user->password) {
+                throw new \Exception('Invalid Credentials');
+            }
+            $token = Str::random(100);
+
+            $dataGuru = ProfileModel::where('nip',$request->nip)->first();
+
+            $user->api_token = $token;
+            $user->save();
+
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'nama' => $dataGuru->nama,
+                'kelamin' => $dataGuru->kelamin,
+                'user' => $user,
+                // 'a' => $apiGuru->get()
+            ]);
+        } catch (Exception $error) {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'error' => $error,
+            ]);
+        }
+    }
+
+    //logout guru
+    public function logoutGuru(Request $request)
+    {
+        $token = UserGuruModel::where('login', $request->nip)->first();
+        $token->api_token ='';
+        $token->save();
+
+        return response()->json(['Token Revoked']);
+    }
+
+    //ambil data guru
+    public function dataGUru()
+    {
+        $result = ProfileModel::where('nip',Auth::user()->login)->first();
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            // 'data' => $result,
+            'data' => $result,
+        ]);
     }
 }

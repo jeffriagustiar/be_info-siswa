@@ -46,6 +46,12 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+
+        'api2' => [
+            'driver' => 'token',
+            'provider' => 'logins',
+            'hash' => false,
+        ],
     ],
 
     /*
@@ -69,6 +75,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+        'logins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Login::class,
         ],
 
         // 'users' => [

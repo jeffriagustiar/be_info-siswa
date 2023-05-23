@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:api')->group(function(){
+    //Siswa
+    //? untuk mengolah data siswa
+
     Route::post('logout', [UserController::class, 'logout']);
     Route::post('update', [UserController::class, 'updateProfile']);
     Route::get('dataUser', [UserController::class, 'fetch']);
@@ -72,10 +75,29 @@ Route::middleware('auth:api')->group(function(){
     Route::get('semester', [SiswaController::class, 'semester']);
     //Data Mapel
     Route::get('mapel', [SiswaController::class, 'maple']);
+
+
+    
 });
+
+Route::middleware('auth:api2')->group(function(){
+    //Guru
+    //? untuk mengolah data guru
+
+    Route::post('logoutGuru', [UserController::class, 'logoutGuru']);
+
+    //data guru
+    Route::get('dataGuru', [UserController::class, 'dataGuru']);
+});
+
+
 //Data Jadwal Pelajaran
 Route::get('jadwalPelajaran', [SiswaController::class, 'jadwalPelajaran']);
 Route::get('test', [SiswaController::class, 'test']);
 Route::get('tahunAbsen', [SiswaController::class, 'tahunAbsen']);
 
+//Login Siswa
 Route::post('login', [UserController::class, 'login']);
+
+//Login Guru
+Route::post('loginGuru', [UserController::class, 'loginGuru']);
