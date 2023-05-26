@@ -58,9 +58,6 @@ Route::middleware('auth:api')->group(function(){
     Route::get('koordinatLokasiSekolahSatu', [SiswaController::class, 'koordinatLokasiSekolahSatu']);
     Route::get('cekSudahAbsenSiswa', [SiswaController::class, 'cekSudahAbsenSiswa']);
     Route::post('ambilAbsenSiswa', [SiswaController::class, 'AbsenSiswa']);
-
-    //Data Tatatertib Sekolah
-    Route::get('catatan', [SiswaController::class, 'catatan']);
     
     //Data Catatan Siswa
     Route::get('catatanSiswa', [SiswaController::class, 'catatanSiswa']);
@@ -88,8 +85,13 @@ Route::middleware('auth:api2')->group(function(){
 
     //data guru
     Route::get('dataGuru', [UserController::class, 'dataGuru']);
+
+    //Data Tatatertib Sekolah
+    Route::get('catatanGuru', [SiswaController::class, 'catatan']);
 });
 
+//Data Tatatertib Sekolah
+Route::get('catatan', [SiswaController::class, 'catatan']);
 
 //Data Jadwal Pelajaran
 Route::get('jadwalPelajaran', [SiswaController::class, 'jadwalPelajaran']);
