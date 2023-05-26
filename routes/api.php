@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\API\SiswaController;
-use App\Http\Controllers\API\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\GuruController;
+use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\SiswaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,6 +93,7 @@ Route::middleware('auth:api2')->group(function(){
 
 //Data Tatatertib Sekolah
 Route::get('catatan', [SiswaController::class, 'catatan']);
+Route::get('dataSemuaSiswa', [GuruController::class, 'dataSiswa']);
 
 //Data Jadwal Pelajaran
 Route::get('jadwalPelajaran', [SiswaController::class, 'jadwalPelajaran']);
