@@ -93,7 +93,14 @@ Route::middleware('auth:api2')->group(function(){
 
 //Data Tatatertib Sekolah
 Route::get('catatan', [SiswaController::class, 'catatan']);
+
+//Data Semua Siswa
 Route::get('dataSemuaSiswa', [GuruController::class, 'dataSiswa']);
+
+//Data Tatatertip
+Route::get('dataSemuaKategori', [GuruController::class, 'dataKategori']);
+Route::get('dataSemuaJenis', [GuruController::class, 'dataJenis']);
+
 
 //Data Jadwal Pelajaran
 Route::get('jadwalPelajaran', [SiswaController::class, 'jadwalPelajaran']);

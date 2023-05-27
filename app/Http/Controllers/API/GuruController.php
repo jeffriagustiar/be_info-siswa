@@ -18,4 +18,30 @@ class GuruController extends Controller
             'data' => $result,
         ]);
     }
+
+    public function dataKategori(Request $request)
+    {
+        $jenis = $request->input('jenis');//pelanggaran
+
+        $result = DB::select("select replid,nama_kategori,kategori from ctt_kategori where kategori='$jenis'");
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $result,
+        ]);
+    }
+
+    public function dataJenis(Request $request)
+    {
+        $kategori = $request->input('kategori');//1
+
+        $result = DB::select("SELECT replid,nama_ctt,point FROM ctt_baik_buruk WHERE id_kategori='$kategori'");
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $result,
+        ]);
+    }
 }
