@@ -79,7 +79,7 @@ class GuruController extends Controller
                 'nis' => $nis,
                 'ket' => $ket,
                 'point' => $point,
-                'mip' => $nip,
+                'nip' => $nip,
             ]);
         } catch (Exception $error) {
             return response()->json([
