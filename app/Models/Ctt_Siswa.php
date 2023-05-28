@@ -18,6 +18,7 @@ class Ctt_Siswa extends Model
         'replid',
         'id_ctt',
         'nis',
+        'nip',
         'tanggal',
         'acc',
         'ket',

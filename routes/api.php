@@ -87,6 +87,10 @@ Route::middleware('auth:api2')->group(function(){
     //data guru
     Route::get('dataGuru', [UserController::class, 'dataGuru']);
 
+    //laporkan siswa
+    //? buat laporan
+    Route::post('laporkanSiswa', [GuruController::class, 'laporkanSiswa']);
+
     //Data Tatatertib Sekolah
     Route::get('catatanGuru', [SiswaController::class, 'catatan']);
 });
@@ -105,6 +109,8 @@ Route::get('dataSemuaJenis', [GuruController::class, 'dataJenis']);
 //Data Jadwal Pelajaran
 Route::get('jadwalPelajaran', [SiswaController::class, 'jadwalPelajaran']);
 Route::get('test', [SiswaController::class, 'test']);
+
+//Data Tahun Absen 
 Route::get('tahunAbsen', [SiswaController::class, 'tahunAbsen']);
 
 //Login Siswa

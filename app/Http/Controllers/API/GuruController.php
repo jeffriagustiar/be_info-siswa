@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Ctt_Siswa;
+use Illuminate\Support\Facades\Auth;
 
 class GuruController extends Controller
 {
@@ -44,4 +47,46 @@ class GuruController extends Controller
             'data' => $result,
         ]);
     }
+
+    public function laporkanSiswa(Request $request)
+    {
+        try {
+            $request->validate([
+                'id_ctt' => 'required',
+                'nis' => 'required',
+                'ket' => 'required',
+                'point' => 'required'
+            ]);
+
+            $id = $request->id_ctt;
+            $nis = $request->nis;
+            $ket = $request->ket;
+            $point = $request->point;
+            $nip = Auth::user()->login;
+
+            $data = Ctt_Siswa::create([
+                'id_ctt' => $id,
+                'nis' => $nis,
+                'nip' => $nip,
+                'ket' => $ket,
+                'point' => $point
+            ]);
+
+            return response()->json([
+                'code' => 200,
+                'pesan' => 'Berhasil buat laporan',
+                'id' => $id,
+                'nis' => $nis,
+                'ket' => $ket,
+                'point' => $point,
+                'mip' => $nip,
+            ]);
+        } catch (Exception $error) {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'error' => $error,
+            ]);
+        }
+    }
+
 }
