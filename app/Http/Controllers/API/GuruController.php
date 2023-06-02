@@ -115,4 +115,20 @@ class GuruController extends Controller
         ]);
     }
 
+
+    public function validasiLaporan(Request $request)
+    {
+        $id=$request->input('id');
+
+        $data = Ctt_Siswa::where('replid',$id);
+
+        $result=$data->update([
+            'acc' => $request->acc
+        ]);
+        return response()->json([
+            'data' => $result,
+            'data' => $data->get()
+        ]);
+    }
+
 }
