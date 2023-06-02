@@ -169,10 +169,11 @@ class UserController extends Controller
     public function dataGUru()
     {
         $result = ProfileModel::where('nip',Auth::user()->login)->first();
+        $kelola = Auth::user()->kelola;
         return response()->json([
             'code' => 200,
             'status' => 'success',
-            // 'data' => $result,
+            'kelola' => $kelola,
             'data' => $result,
         ]);
     }
