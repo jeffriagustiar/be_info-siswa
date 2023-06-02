@@ -93,20 +93,38 @@ class GuruController extends Controller
     {
         $nip = Auth::user()->login;
 
-        $result = DB::select("
-        SELECT 
-            a.replid,b.nama,e.nama_kategori as kategori,d.nama_ctt as jenis,c.kelas,a.point,a.acc,a.ket,a.nip,a.tanggal
-        FROM 
-            ctt_siswa a 
-            inner join siswa b on a.nis=b.nis
-            inner join kelas c on b.idkelas=c.replid
-            inner join ctt_baik_buruk d on a.id_ctt=d.replid
-            inner join ctt_kategori e on d.id_kategori=e.replid
-        WHERE
-            a.nip='$nip'
-        ORDER BY
-            a.replid DESC"
-        );
+        $kelola = Auth::user()->kelola;
+
+        if ($kelola == 'BK') {
+            $result = DB::select("
+                SELECT 
+                    a.replid,b.nama,e.nama_kategori as kategori,d.nama_ctt as jenis,c.kelas,a.point,a.acc,a.ket,a.nip,a.tanggal
+                FROM 
+                    ctt_siswa a 
+                    inner join siswa b on a.nis=b.nis
+                    inner join kelas c on b.idkelas=c.replid
+                    inner join ctt_baik_buruk d on a.id_ctt=d.replid
+                    inner join ctt_kategori e on d.id_kategori=e.replid
+                ORDER BY
+                    a.replid DESC"
+            );
+        } else {
+            $result = DB::select("
+                SELECT 
+                    a.replid,b.nama,e.nama_kategori as kategori,d.nama_ctt as jenis,c.kelas,a.point,a.acc,a.ket,a.nip,a.tanggal
+                FROM 
+                    ctt_siswa a 
+                    inner join siswa b on a.nis=b.nis
+                    inner join kelas c on b.idkelas=c.replid
+                    inner join ctt_baik_buruk d on a.id_ctt=d.replid
+                    inner join ctt_kategori e on d.id_kategori=e.replid
+                WHERE
+                    a.nip='$nip'
+                ORDER BY
+                    a.replid DESC"
+            );
+        }
+        
 
         return response()->json([
             'code' => 200,
