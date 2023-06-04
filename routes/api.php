@@ -93,6 +93,9 @@ Route::middleware('auth:api2')->group(function(){
     //? list laporan
     Route::get('listLaporan', [GuruController::class, 'listLaporan']);
     Route::post('validasiLaporan', [GuruController::class, 'validasiLaporan']);
+    //? tambah kategori laporan
+    Route::post('addKategori', [GuruController::class, 'addKategori']);
+    Route::post('editKategori', [GuruController::class, 'editKategori']);
     
     //Data Tatatertib Sekolah
     Route::get('catatanGuru', [SiswaController::class, 'catatan']);

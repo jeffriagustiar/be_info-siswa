@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Ctt_Kategori;
 use App\Models\Ctt_Siswa;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,7 +27,7 @@ class GuruController extends Controller
     {
         $jenis = $request->input('jenis');//pelanggaran
 
-        $result = DB::select("select replid,nama_kategori,kategori from ctt_kategori where kategori='$jenis'");
+        $result = DB::select("select replid,nama_kategori,kategori,ket from ctt_kategori where kategori='$jenis'");
 
         return response()->json([
             'code' => 200,
@@ -142,6 +143,55 @@ class GuruController extends Controller
 
         $result=$data->update([
             'acc' => $request->acc
+        ]);
+        return response()->json([
+            'data' => $result,
+            'data' => $data->get()
+        ]);
+    }
+
+    public  function addKategori(Request $request)
+    {
+        try {
+            $request->validate([
+                'nama' => 'required',
+                'kategori' => 'required',
+                'ket' => 'required',
+            ]);
+
+            $nama = $request->nama;
+            $kategori = $request->kategori;
+            $ket = $request->ket;
+
+            Ctt_Kategori::create([
+                'nama_kategori' => $nama,
+                'kategori' => $kategori,
+                'ket' => $ket,
+            ]);
+
+            return response()->json([
+                'code' => 200,
+                'pesan' => 'Berhasil buat kategori',
+                'nama' => $nama,
+                'ket' => $ket,
+            ]);
+        } catch (Exception $error) {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'error' => $error,
+            ]);
+        }
+    }
+
+    public function editKategori(Request $request)
+    {
+        $id=$request->input('id');
+
+        $data = Ctt_Kategori::where('replid',$id);
+
+        $result=$data->update([
+            'nama_kategori' => $request->nama,
+            'ket' => $request->ket,
         ]);
         return response()->json([
             'data' => $result,
